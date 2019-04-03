@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="keygen.Controller">
+    <children>
+      <Label fx:id="lbl_title" text="Генерация ключей асимметричного шифрования RSA" GridPane.columnIndex="1" GridPane.columnSpan="2" />
+      <Label text="выбрать получателя" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <ComboBox fx:id="cb_reciever" prefWidth="150.0" promptText="получатель" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <Label text="Имя нового Получателя" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+      <TextField fx:id="txt_usr" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+      <Label text="публичный ключ" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+      <TextArea fx:id="ta_publicKey" prefHeight="250.0" prefWidth="350" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+      <Label text="приватный ключ" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+      <Button fx:id="btn_keygen" mnemonicParsing="false" onAction="#onclickBtnKeygen" text="генерировать ключи" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+      <TextArea fx:id="ta_privateKey" prefHeight="250.0" prefWidth="400" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="9" />
+      <Button fx:id="btn_deleteusr" mnemonicParsing="false" onAction="#onclickBtnDeleteusr" text="удалить" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+    </children>
+
+</GridPane>
