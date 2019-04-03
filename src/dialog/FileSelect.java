@@ -1,0 +1,79 @@
+/*
+ * Copyright (c) 2019. Eremin
+ */
+
+/*
+  Выбор файла
+  @see https://o7planning.org/ru/11129/javafx-filechooser-and-directorychooser-tutorial
+  @see https://docs.oracle.com/javafx/2/ui_controls/file-chooser.htm
+ */
+
+package dialog;
+
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
+import java.io.File;
+
+public class FileSelect
+{
+  private static String  initialDir = System.getProperty("user.home");
+
+  public FileSelect() {}
+
+  /**
+   * Конструктор класса выбора файла
+   * @param iDir  начальный каталог
+   */
+  public FileSelect(String iDir)
+  {
+    initialDir = iDir;
+  }
+
+  /**
+   * Выбор файла на диске
+   * @param ae  событие кнопки (из нее получим сцену)
+   * @return  имя выбранного файла
+   */
+  public String openDialog(ActionEvent ae)
+  {
+    Stage stage = event2stage(ae);
+    FileChooser fileChooser = new FileChooser();
+    // @see https://o7planning.org/ru/11129/javafx-filechooser-and-directorychooser-tutorial#a3827915
+    // Set Initial Directory
+    fileChooser.setInitialDirectory(new File(initialDir));
+    File selectedFile = fileChooser.showOpenDialog(stage);
+    if(selectedFile == null)
+      return null;
+    String  fname = selectedFile.getPath();
+    initialDir = name2dir(fname);
+    return fname;
+  }
+
+  /**
+   * Получить сцену кнопки по событию кнопки
+   * @param ae  событие кнопки
+   * @return  сцена
+   */
+  private Stage   event2stage(ActionEvent ae)
+  {
+    Node source = (Node) ae.getSource();
+    Stage stage = (Stage) source.getScene().getWindow();
+    return stage;
+  }
+
+  /**
+   * ПОлучить из полного имени файла его директорию
+   * @param fname полное имя файла
+   * @return  директория файла
+   */
+  private String  name2dir(String fname)
+  {
+    File f = new File(fname);
+    return f.getParent();
+  }
+
+} // end of file
+
