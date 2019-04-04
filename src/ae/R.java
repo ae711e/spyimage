@@ -53,16 +53,17 @@ public class R {
    */
   static void testDb()
   {
-    final String create_tables = "" +
-        "CREATE TABLE _Info(key text PRIMARY KEY, val text);" +
-        "CREATE TABLE keys (usr VARCHAR(255) PRIMARY KEY, publickey TEXT, privatekey TEXT, flag INT DEFAULT 0, wdat DATETIME DEFAULT (DATETIME('now', 'localtime')))";
+    final String create_tables = "CREATE TABLE _Info(key VARCHAR(32) PRIMARY KEY, val text);CREATE TABLE keys (usr VARCHAR(255) PRIMARY KEY, publickey TEXT, privatekey TEXT, flag INT DEFAULT 0, wdat DATETIME DEFAULT (DATETIME('now', 'localtime')));INSERT INTO _Info(key) VALUES('SmtpSender');INSERT INTO _Info(key) VALUES('SmtpServer');INSERT INTO _Info(key) VALUES('SmtpServerPortSend');INSERT INTO _Info(key) VALUES('SmtpServerPortRecv');INSERT INTO _Info(key) VALUES('SmtpServerUser');INSERT INTO _Info(key) VALUES('SmtpServerPwd');";
     if(db == null) {
       db = new DatabaseSqlite(WorkDB);
       //
       String str = db.Dlookup("SELECT COUNT(*) FROM _Info;");
       if (str == null) {
         // ошибка чтения из БД - создадим таблицу
-        db.ExecSql(create_tables);
+        String ssql[] = create_tables.split(";"); // разобьем на отдельные операторы
+        for (String ss: ssql) {
+          db.ExecSql(ss);
+        }
       }
     }
   }
@@ -285,7 +286,7 @@ public class R {
       val = "null";
     else
       val = db.s2s(Value);
-    db.Dlookup("UPDATE _Info SET val=" + val + " WHERE key='" + keyName + "'");
+    db.ExecSql("UPDATE _Info SET val=" + val + " WHERE key='" + keyName + "'");
   }
 
     /**
