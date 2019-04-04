@@ -99,7 +99,7 @@ public class R {
     putInfo(db, "SmtpSender",     SmtpSender);        // адрес отправителя
     putInfo(db, "SmtpServer",     SmtpServer);       // адрес почтового сервера
     putInfo(db, "SmtpServerPortSend", SmtpServerPortSend);      // порт сервера
-    putInfo(db, "SmtpServerPortSend", SmtpServerPortRecv);      // порт сервера
+    putInfo(db, "SmtpServerPortRecv", SmtpServerPortRecv);      // порт сервера
     putInfo(db, "SmtpServerUser", SmtpServerUser);        // имя пользователя для регистрации на сервере
     putInfo(db, "SmtpServerPwd",  SmtpServerPwd);        // пароль пользователя для регистрации на сервере
   }
@@ -284,7 +284,7 @@ public class R {
     if(Value == null || Value.length() < 1)
       val = "null";
     else
-      val ="'" + db.s2s(Value) + "'";
+      val = db.s2s(Value);
     db.Dlookup("UPDATE _Info SET val=" + val + " WHERE key='" + keyName + "'");
   }
 

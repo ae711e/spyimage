@@ -64,17 +64,13 @@ public class AccountController {
    * Запишем данные учетной записи после редактирования
    */
   void putAccount() {
-
     R.SmtpSender          = txt_SmtpSender.getText();       // электронный адрес почты
     R.SmtpServer          = txt_SmtpServer.getText();       // адрес почтового сервера
     R.SmtpServerPortSend  = txt_SmtpServerPortSend.getText();   // порт почтового сервера для отправки
     R.SmtpServerPortRecv  = txt_SmtpServerPortRecv.getText();   // порт почтового сервера для приема
     R.SmtpServerUser      = txt_SmtpServerUser.getText();   // имя пользователя почтового сервера
     R.SmtpServerPwd       = txt_SmtpServerPwd.getText();    // пароль пользователя почтового сервера
-
-    //txt_name.setText(account.getName());
-    //psw_pass.setText(account.getPass());
-    R.putAccount();   // заполним данные учетной записи
+    R.putAccount();   // заполним данные учетной записи в БД
   }
 
   /**
@@ -104,10 +100,9 @@ public class AccountController {
    * По нажатию добавим в список значений новый аккаунт
    * @param ae  активное событие
    */
-  @FXML
   public void click_btn_Ok(ActionEvent ae)
   {
-    //System.out.println("Click OK");
+    System.out.println("Click OK");
     //account.setName(txt_name.getText().trim());
     //account.setPass(psw_pass.getText().trim());
     //
