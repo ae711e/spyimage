@@ -29,7 +29,6 @@ public class Main extends Application {
 
   public static void main(String[] args) {
     R.loadDefault();
-    R.getAccount();
     launch(args);
   }
 
@@ -39,8 +38,7 @@ public class Main extends Application {
    */
   @Override
   public void stop() throws Exception {
-    if(R.db != null)
-      R.db.close();
+    R.dbClose();
     super.stop();
   }
 

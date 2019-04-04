@@ -12,7 +12,7 @@ import ae.R;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Model
+class Model
 {
 
   /**
@@ -21,7 +21,7 @@ public class Model
    * @param fileAppend  файл вложения
    * @return
    */
-  public boolean  sendMailTo(String email, String fileAppend)
+  boolean  sendMailTo(String email, String fileAppend)
   {
     MailSend msg = new MailSend();
     //
@@ -30,16 +30,17 @@ public class Model
   }
 
   /**
-   * Взять список получателей из таблицы keys в виде массива строк
+   * Взять список получателей из таблицы keys
    * @return массив строк
    */
-  Collection<String>  getUsers()
+  Collection<String> getKeysUsers()
   {
     // получим список имен из БД
     ArrayList<String[]> ard = R.db.DlookupArray("SELECT usr FROM keys ORDER BY usr");
     ArrayList<String> list = new ArrayList<>();
-    for (String[] r: ard) list.add(r[0]); // добавим имя в массив
+    for(String[] r: ard) list.add(r[0]); // добавим имя в массив
     return  list;
   }
+
 
 } // end of class

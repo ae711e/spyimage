@@ -51,13 +51,12 @@ public class Controller implements Initializable
     f_image.setImage(new Image(uri));
     //
     // заполним список пользователей про которых у нас есть ключи
-    Collection<String> users = model.getUsers();
+    Collection<String> users = model.getKeysUsers();
     cmb_users.getItems().removeAll(cmb_users.getItems()); // очистить список комбо-бокса
     cmb_users.getItems().addAll(users);
     cmb_users.getSelectionModel().select(0);  // выбрать первый элемент
     //
     onaction_cmb_users(null); // заполним поле адресата
-
   }
 
   public void onclick_btn_load(ActionEvent ae)

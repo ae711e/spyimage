@@ -78,6 +78,15 @@ public class R {
     R.ProxyUser       = R.getInfo(db, "ProxyUser",      R.ProxyUser);        // прокси пользователь
     R.ProxyPass       = R.getInfo(db, "ProxyPass",      R.ProxyPass);        // прокси пароль
     //
+    getAccount();
+  }
+
+  static public void dbClose()
+  {
+    if(db != null) {
+      db.close();
+      db = null;
+    }
   }
 
   static public void getAccount()
@@ -355,5 +364,7 @@ public class R {
     return result;
   }
 */
+
+  /////////////////////////////////////////////////////////////////////////////////
 
 } // end of class
