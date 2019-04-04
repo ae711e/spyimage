@@ -9,13 +9,12 @@ import java.util.ArrayList;
  */
 
 public class Model {
-  private String    f_dbName = "keys.db";
-  private Database  f_db;    // база данных ключей
+  private Database  f_db;  // база данных ключей
   private String lastError = "";
+
   Model()
   {
-    Database db = new DatabaseSqlite(f_dbName);
-    f_db = db;
+    f_db = R.db;
   }
 
   /**

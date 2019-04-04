@@ -13,8 +13,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by ae on 28.01.2017.
+/*
  * Ресурсный класс
 */
 /*
@@ -61,9 +60,7 @@ public class R {
       if (str == null) {
         // ошибка чтения из БД - создадим таблицу
         String ssql[] = create_tables.split(";"); // разобьем на отдельные операторы
-        for (String ss: ssql) {
-          db.ExecSql(ss);
-        }
+        for (String ss: ssql)  db.ExecSql(ss);
       }
     }
   }
