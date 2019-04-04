@@ -7,7 +7,6 @@
 
 package sender;
 
-import ae.R;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,7 +15,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.net.URL;
@@ -36,9 +34,7 @@ public class Controller implements Initializable
   @FXML
   Button    btn_send;
   @FXML
-  Button    btn_selfile;
-  @FXML
-  TextField txt_reciever; // адрес приемника картинки
+  TextField txt_receiver; // адрес приемника картинки
   @FXML
   ComboBox<String>  cmb_users;  // список пользователей
 
@@ -92,7 +88,7 @@ public class Controller implements Initializable
     String str;
     str = btn_send.getText();
     System.out.println("Нажали кнопку <" + str + "> / " + ae.getEventType().getName());
-    str = txt_reciever.getText();   // адрес получателя
+    str = txt_receiver.getText();   // адрес получателя
     if(model.sendMailTo(str, fileImage)) {
       System.out.println("Отправили почту");
     } else {
@@ -119,7 +115,7 @@ public class Controller implements Initializable
     String str;
     str = cmb_users.getValue(); // значение выбранноего элемента
     System.out.println("Акция " + str);
-    txt_reciever.setText(str);
+    txt_receiver.setText(str);
   }
 
 

@@ -33,7 +33,7 @@ public class FileSelect
   }
 
   /**
-   * Выбор файла на диске
+   * Выбор для чтения файла на диске
    * @param ae  событие кнопки (из нее получим сцену)
    * @return  имя выбранного файла
    */
@@ -45,6 +45,26 @@ public class FileSelect
     // Set Initial Directory
     fileChooser.setInitialDirectory(new File(initialDir));
     File selectedFile = fileChooser.showOpenDialog(stage);
+    if(selectedFile == null)
+      return null;
+    String  fname = selectedFile.getPath();
+    initialDir = name2dir(fname);
+    return fname;
+  }
+
+  /**
+   * Выбор для записи файла на диске
+   * @param ae  событие кнопки (из нее получим сцену)
+   * @return  имя выбранного файла
+   */
+  public String saveDialog(ActionEvent ae)
+  {
+    Stage stage = event2stage(ae);
+    FileChooser fileChooser = new FileChooser();
+    // @see https://www.genuinecoder.com/save-files-javafx-filechooser/
+    // Set Initial Directory
+    fileChooser.setInitialDirectory(new File(initialDir));
+    File selectedFile = fileChooser.showSaveDialog(stage);
     if(selectedFile == null)
       return null;
     String  fname = selectedFile.getPath();

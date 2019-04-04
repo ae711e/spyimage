@@ -24,7 +24,7 @@ public class Main extends Application {
     primaryStage.getIcons().add(new Image("res/app.png"));
     primaryStage.setTitle("Отправка изображения");
     primaryStage.setScene(new Scene(root, 600, 400));
-    primaryStage.getScene().getStylesheets().add("css/JMetroLightTheme.css"); //подключим стили
+    //primaryStage.getScene().getStylesheets().add("css/JMetroLightTheme.css"); //подключим стили
     primaryStage.show();
   }
 
@@ -40,9 +40,9 @@ public class Main extends Application {
    */
   @Override
   public void stop() throws Exception {
-    if(R.db != null)
-      R.db.close();
+    if(R.db != null)  R.db.close();
     super.stop();
   }
-}
+
+} // end of class
 

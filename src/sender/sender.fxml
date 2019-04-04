@@ -14,7 +14,7 @@
       <Button fx:id="btn_load" minWidth="-Infinity" mnemonicParsing="false" onAction="#onclick_btn_load" text="загрузить" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
       <Button fx:id="btn_send" minWidth="-Infinity" mnemonicParsing="false" onAction="#onclick_btn_send" text="отправить" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
 
-      <TextField fx:id="txt_reciever" promptText="адрес получателя" GridPane.rowIndex="1" />
+      <TextField fx:id="txt_receiver" promptText="адрес получателя" GridPane.rowIndex="1" />
       <ComboBox fx:id="cmb_users" onAction="#onaction_cmb_users" prefWidth="200.0" GridPane.rowIndex="2" />
       <Button fx:id="btn_account" mnemonicParsing="false" onAction="#onclick_btn_account" text="account" GridPane.rowIndex="3" />
    </children>
