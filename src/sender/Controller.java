@@ -89,6 +89,11 @@ public class Controller implements Initializable
     System.out.println("Выбрали файл: <" + fname + ">");
   }
 
+  public void onclick_btn_account(ActionEvent ae)
+  {
+    dialog.Account  acc = new dialog.Account();
+    acc.openDialog(ae);
+  }
 
 } // end of class
 

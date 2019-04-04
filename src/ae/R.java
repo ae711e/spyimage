@@ -28,6 +28,7 @@ public class R {
   // рабочая БД
   //public static String  WorkDB = "C:/tmp/asrevizor.db";
   static String WorkDB = "spyimage.db";   // CentOs Linux (в Windows будет D:\var\Gmir\asrevizor.db)
+  static public Database  db;   // база данных проекта
 
   // final static String sep = System.getProperty("file.separator"); // разделитель имени каталогов
   static String ProxyServer = _r.proxyserv;  // proxy сервер
@@ -40,217 +41,254 @@ public class R {
   // адрес получателя почты (можно несколько с разделением по ;)
   static String SmtpMailCC     = _r.smtpmailcc;          // адрес получателя копии почты
 
-  static String SmtpServer     = _r.smtpserver;       // адрес почтового сервера
-  static int    SmtpServerPort = _r.smtpserverport;   // порт почтового сервера
-  static String SmtpSender     = _r.smtpsender;       // адрес отправителя почты
-  static String SmtpServerUser = _r.smtpserveruser;   // имя пользователя почтового сервера
-  static String SmtpServerPwd  = _r.smtpserverpwd;    // пароль пользователя почтового сервера
+  public static String SmtpSender     = _r.smtpsender;       // адрес отправителя почты
+  public static String SmtpServer     = _r.smtpserver;       // адрес почтового сервера
+  public static String SmtpServerPortSend = _r.smtpserverportsend;   // порт почтового сервера
+  public static String SmtpServerPortRecv = _r.smtpserverportrecv;   // порт почтового сервера приема
+  public static String SmtpServerUser = _r.smtpserveruser;   // имя пользователя почтового сервера
+  public static String SmtpServerPwd  = _r.smtpserverpwd;    // пароль пользователя почтового сервера
+
+  /**
+   * Проверить наличие базы данных и создать нужные таблицы
+   */
+  static void testDb()
+  {
+    final String create_tables = "" +
+        "CREATE TABLE _Info(key text PRIMARY KEY, val text);" +
+        "CREATE TABLE keys (usr VARCHAR(255) PRIMARY KEY, publickey TEXT, privatekey TEXT, flag INT DEFAULT 0, wdat DATETIME DEFAULT (DATETIME('now', 'localtime')))";
+    if(db == null) {
+      db = new DatabaseSqlite(WorkDB);
+      //
+      String str = db.Dlookup("SELECT COUNT(*) FROM _Info;");
+      if (str == null) {
+        // ошибка чтения из БД - создадим таблицу
+        db.ExecSql(create_tables);
+      }
+    }
+  }
 
   /**
    * Загрузить параметры по-умолчанию из БД таблицы "_Info"
    */
-  static void loadDefault(Database db)
+  static public void loadDefault()
   {
+    testDb(); // проверить наличие БД
     // прочитать из БД значения часов выдержки
-    R.SmtpMailCC      = R.getInfo(db, "SmtpMailCC",      R.SmtpMailCC);       // кому отсылать копии
-    R.ProxyServer     = R.getInfo(db, "ProxyServer",     R.ProxyServer);      // прокси сервер
-    R.ProxyPort       = R.getInfo(db, "ProxyPort",       R.ProxyPort);        // прокси порт
-    R.ProxyUser       = R.getInfo(db, "ProxyUser",       R.ProxyUser);        // прокси пользователь
-    R.ProxyPass       = R.getInfo(db, "ProxyPass",       R.ProxyPass);        // прокси пароль
-
-    // System.out.println("HoursNotOnLine  = " + R.HoursNotOnLine);
-    // System.out.println("HoursAfterEmail = " + R.HoursAfterEmail);
-    // System.out.println("HoursExpLens    = " + R.HoursExpLens);
-    // System.out.println("HoursTasksBack  = " + R.HoursTasksBack);
-    // System.out.println("HoursExpTasks   = " + R.HoursExpTasks);
-    // System.out.println("TaskQuestDelay  = " + R.TaskQuestDelay);
-    // System.out.println("TaskFail        = " + R.TaskFail);
-    // System.out.println("MetaTasks       = " + R.MetaTasks);
-    // System.out.println("MetaTasksID     = " + R.MetaTasksID);
-    // System.out.println("ProxyServer     = " + R.ProxyServer);
-    // System.out.println("ProxyPort       = " + R.ProxyPort);
-    // System.out.println("TimeOut (ms)    = " + R.TimeOut);
-    //
-    //LogRecordTTL
+    R.SmtpMailCC      = R.getInfo(db, "SmtpMailCC",     R.SmtpMailCC);       // кому отсылать копии
+    R.ProxyServer     = R.getInfo(db, "ProxyServer",    R.ProxyServer);      // прокси сервер
+    R.ProxyPort       = R.getInfo(db, "ProxyPort",      R.ProxyPort);        // прокси порт
+    R.ProxyUser       = R.getInfo(db, "ProxyUser",      R.ProxyUser);        // прокси пользователь
+    R.ProxyPass       = R.getInfo(db, "ProxyPass",      R.ProxyPass);        // прокси пароль
     //
   }
 
-  /**
-     * Пауза выполнения программы
-     * @param time   время задержки, мсек
-     */
-    static void sleep(long time)
-    {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+  static public void getAccount()
+  {
+    // прочитать из БД значения часов выдержки
+    SmtpSender         = getInfo(db, "SmtpSender",     SmtpSender);        // адрес отправителя
+    SmtpServer         = getInfo(db, "SmtpServer",     SmtpServer);       // адрес почтового сервера
+    SmtpServerPortSend = getInfo(db, "SmtpServerPortSend", SmtpServerPortSend);      // порт сервера
+    SmtpServerPortRecv = getInfo(db, "SmtpServerPortRecv", SmtpServerPortRecv);      // порт сервера
+    SmtpServerUser     = getInfo(db, "SmtpServerUser", SmtpServerUser);        // имя пользователя для регистрации на сервере
+    SmtpServerPwd      = getInfo(db, "SmtpServerPwd",  SmtpServerPwd);        // пароль пользователя для регистрации на сервере
+  }
 
-    /**
-     * прочитать ресурсный файл
-     * by novel  http://skipy-ru.livejournal.com/5343.html
-     * https://docs.oracle.com/javase/tutorial/deployment/webstart/retrievingResources.html
-     * @param nameRes - имя ресурсного файла
-     * @return -содержимое ресурсного файла
-     */
-    public String readRes(String nameRes)
-    {
-        String str = null;
-        ByteArrayOutputStream buf = readResB(nameRes);
-        if(buf != null) {
-            str = buf.toString();
-        }
-        return str;
-    }
-
-    /**
-     * Поместить ресурс в байтовый массив
-     * @param nameRes - название ресурса (относительно каталога пакета)
-     * @return - байтовый массив
-     */
-    private ByteArrayOutputStream readResB(String nameRes)
-    {
-        try {
-            // Get current classloader
-            InputStream is = getClass().getResourceAsStream(nameRes);
-            if(is == null) {
-                System.out.println("Not found resource: " + nameRes);
-                return null;
-            }
-            // https://habrahabr.ru/company/luxoft/blog/278233/ п.8
-            BufferedInputStream bin = new BufferedInputStream(is);
-            ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            int len;
-            byte[] buf = new byte[512];
-            while((len=bin.read(buf)) != -1) {
-                bout.write(buf,0,len);
-            }
-            return bout;
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Записать в файл текст из строки
-     * @param strTxt - строка текста
-     * @param fileName - имя файла
-     * @return      true - записано, false - ошибка
-     */
-    public boolean writeStr2File(String strTxt, String fileName)
-    {
-        File f = new File(fileName);
-        try {
-            PrintWriter out = new PrintWriter(f);
-            out.write(strTxt);
-            out.close();
-        } catch(IOException ex) {
-            ex.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     *  Записать в файл ресурсный файл
-     * @param nameRes   имя ресурса (от корня src)
-     * @param fileName  имя файла, куда записывается ресурс
-     * @return  true - запись выполнена, false - ошибка
-     */
-    public boolean writeRes2File(String nameRes, String fileName)
-    {
-        boolean b = false;
-        ByteArrayOutputStream buf = readResB(nameRes);
-        if(buf != null) {
-            try {
-                FileOutputStream fout = new FileOutputStream(fileName);
-                buf.writeTo(fout);
-                fout.close();
-                b = true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return b;
-    }
-    
-    /**
-     * Загружает текстовый ресурс в заданной кодировке
-     * @param name      имя ресурса
-     * @param code_page кодировка, например "Cp1251"
-     * @return          строка ресурса
-     */
-    public String getText(String name, String code_page)
-    {
-        StringBuilder sb = new StringBuilder();
-        try {
-            InputStream is = this.getClass().getResourceAsStream(name);  // Имя ресурса
-            BufferedReader br = new BufferedReader(new InputStreamReader(is, code_page));
-            String line;
-            while ((line = br.readLine()) !=null) {
-                sb.append(line);  sb.append("\n");
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return sb.toString();
-    }
-
-    /**
-     * Получить из таблицы _Info значение ключа, а если таблицы или ключа нет, то вернуть значение по-умолчанию
-     * CREATE TABLE _Info(key text PRIMARY KEY, val text)
-     * @param db            база данных с таблицей Info
-     * @param keyName       имя ключа
-     * @param defaultValue  значение по-умолчанию
-     * @return значение ключа
-     */
-    private static int getInfo(Database db, String keyName, int defaultValue)
-    {
-        String val = db.Dlookup("SELECT val FROM _Info WHERE key='" + keyName + "'");
-        if(val == null) {
-            return defaultValue;
-        }
-        return Integer.parseInt(val);
-    }
-
-    /**
-     * Получить из таблицы _Info значение ключа, а если таблицы или ключа нет, то вернуть значение по-умолчанию
-     * CREATE TABLE _Info(key text PRIMARY KEY, val text)
-     * @param db            база данных с таблицей Info
-     * @param keyName       имя ключа
-     * @param defaultValue  значение по-умолчанию
-     * @return значение ключа (действительное число)
-     */
-    private static double getInfo(Database db, String keyName, double defaultValue)
-    {
-        String val = db.Dlookup("SELECT val FROM _Info WHERE key='" + keyName + "'");
-        if(val == null) {
-            return defaultValue;
-        }
-        return Double.parseDouble(val);
-    }
-
-    /**
-     * Получить из таблицы _Info значение ключа, а если таблицы или ключа нет, то вернуть значение по-умолчанию
-     * CREATE TABLE _Info(key text PRIMARY KEY, val text)
-     * @param db            база данных с таблицей Info
-     * @param keyName       имя ключа
-     * @param defaultValue  значение по-умолчанию
-     * @return значение ключа (строка)
-     */
-    private static String getInfo(Database db, String keyName, String defaultValue)
-    {
-        String val = db.Dlookup("SELECT val FROM _Info WHERE key='" + keyName + "'");
-        if(val == null) {
-            return defaultValue;
-        }
-        return val;
-    }
+  static public void putAccount()
+  {
+    // положить в БД значения аккаунта
+    putInfo(db, "SmtpSender",     SmtpSender);        // адрес отправителя
+    putInfo(db, "SmtpServer",     SmtpServer);       // адрес почтового сервера
+    putInfo(db, "SmtpServerPortSend", SmtpServerPortSend);      // порт сервера
+    putInfo(db, "SmtpServerPortSend", SmtpServerPortRecv);      // порт сервера
+    putInfo(db, "SmtpServerUser", SmtpServerUser);        // имя пользователя для регистрации на сервере
+    putInfo(db, "SmtpServerPwd",  SmtpServerPwd);        // пароль пользователя для регистрации на сервере
+  }
 
   /**
+   * Пауза выполнения программы
+   * @param time   время задержки, мсек
+   */
+  static public void sleep(long time)
+  {
+      try {
+          Thread.sleep(time);
+      } catch (InterruptedException e) {
+          e.printStackTrace();
+      }
+  }
+
+  /**
+   * прочитать ресурсный файл
+   * by novel  http://skipy-ru.livejournal.com/5343.html
+   * https://docs.oracle.com/javase/tutorial/deployment/webstart/retrievingResources.html
+   * @param nameRes - имя ресурсного файла
+   * @return -содержимое ресурсного файла
+   */
+  public String readRes(String nameRes)
+  {
+      String str = null;
+      ByteArrayOutputStream buf = readResB(nameRes);
+      if(buf != null) {
+          str = buf.toString();
+      }
+      return str;
+  }
+
+  /**
+   * Поместить ресурс в байтовый массив
+   * @param nameRes - название ресурса (относительно каталога пакета)
+   * @return - байтовый массив
+   */
+  private ByteArrayOutputStream readResB(String nameRes)
+  {
+      try {
+          // Get current classloader
+          InputStream is = getClass().getResourceAsStream(nameRes);
+          if(is == null) {
+              System.out.println("Not found resource: " + nameRes);
+              return null;
+          }
+          // https://habrahabr.ru/company/luxoft/blog/278233/ п.8
+          BufferedInputStream bin = new BufferedInputStream(is);
+          ByteArrayOutputStream bout = new ByteArrayOutputStream();
+          int len;
+          byte[] buf = new byte[512];
+          while((len=bin.read(buf)) != -1) {
+              bout.write(buf,0,len);
+          }
+          return bout;
+      } catch (IOException ex) {
+          ex.printStackTrace();
+      }
+      return null;
+  }
+
+  /**
+   * Записать в файл текст из строки
+   * @param strTxt - строка текста
+   * @param fileName - имя файла
+   * @return      true - записано, false - ошибка
+   */
+  public boolean writeStr2File(String strTxt, String fileName)
+  {
+      File f = new File(fileName);
+      try {
+          PrintWriter out = new PrintWriter(f);
+          out.write(strTxt);
+          out.close();
+      } catch(IOException ex) {
+          ex.printStackTrace();
+          return false;
+      }
+      return true;
+  }
+
+  /**
+   *  Записать в файл ресурсный файл
+   * @param nameRes   имя ресурса (от корня src)
+   * @param fileName  имя файла, куда записывается ресурс
+   * @return  true - запись выполнена, false - ошибка
+   */
+  public boolean writeRes2File(String nameRes, String fileName)
+  {
+      boolean b = false;
+      ByteArrayOutputStream buf = readResB(nameRes);
+      if(buf != null) {
+          try {
+              FileOutputStream fout = new FileOutputStream(fileName);
+              buf.writeTo(fout);
+              fout.close();
+              b = true;
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+      }
+      return b;
+  }
+
+  /**
+   * Загружает текстовый ресурс в заданной кодировке
+   * @param name      имя ресурса
+   * @param code_page кодировка, например "Cp1251"
+   * @return          строка ресурса
+   */
+  public String getText(String name, String code_page)
+  {
+      StringBuilder sb = new StringBuilder();
+      try {
+          InputStream is = this.getClass().getResourceAsStream(name);  // Имя ресурса
+          BufferedReader br = new BufferedReader(new InputStreamReader(is, code_page));
+          String line;
+          while ((line = br.readLine()) !=null) {
+              sb.append(line);  sb.append("\n");
+          }
+      } catch (IOException ex) {
+          ex.printStackTrace();
+      }
+      return sb.toString();
+  }
+
+  /**
+   * Получить из таблицы _Info значение ключа, а если таблицы или ключа нет, то вернуть значение по-умолчанию
+   * CREATE TABLE _Info(key text PRIMARY KEY, val text)
+   * @param db            база данных с таблицей Info
+   * @param keyName       имя ключа
+   * @param defaultValue  значение по-умолчанию
+   * @return значение ключа
+   */
+  private static int getInfo(Database db, String keyName, int defaultValue)
+  {
+      String val = getInfo(db, keyName, Integer.toString(defaultValue));
+      return Integer.parseInt(val);
+  }
+
+  /**
+   * Получить из таблицы _Info значение ключа, а если таблицы или ключа нет, то вернуть значение по-умолчанию
+   * CREATE TABLE _Info(key text PRIMARY KEY, val text)
+   * @param db            база данных с таблицей Info
+   * @param keyName       имя ключа
+   * @param defaultValue  значение по-умолчанию
+   * @return значение ключа (строка)
+   */
+  private static String getInfo(Database db, String keyName, String defaultValue)
+  {
+      String val = db.Dlookup("SELECT val FROM _Info WHERE key='" + keyName + "'");
+      if(val == null) {
+          return defaultValue;
+      }
+      return val;
+  }
+
+  /**
+   * Записать в таблицу параметров числовое значение
+   * CREATE TABLE _Info(key text PRIMARY KEY, val text)
+   * @param db        база данных с таблицей Info
+   * @param keyName   имя ключа
+   * @param Value     значение
+   */
+  private static void putInfo(Database db, String keyName, int Value)
+  {
+    putInfo(db, keyName, Integer.toString(Value));
+  }
+
+  /**
+   * Записать в таблицу параметров строковое значение
+   * CREATE TABLE _Info(key text PRIMARY KEY, val text)
+   * @param db        база данных с таблицей Info
+   * @param keyName   имя ключа
+   * @param Value     значение
+   */
+  private static void putInfo(Database db, String keyName, String Value)
+  {
+    String val;
+    if(Value == null || Value.length() < 1)
+      val = "null";
+    else
+      val ="'" + db.s2s(Value) + "'";
+    db.Dlookup("UPDATE _Info SET val=" + val + " WHERE key='" + keyName + "'");
+  }
+
+    /**
    * Копировать содержимое таблицы в другую аналогичную таблицу
    * @param db      база данных
    * @param tabSrc  исходная таблица

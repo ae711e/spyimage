@@ -1,5 +1,6 @@
 package sender;
 
+import ae.R;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,6 +21,8 @@ public class Main extends Application {
   }
 
   public static void main(String[] args) {
+    R.loadDefault();
+    R.getAccount();
     launch(args);
   }
 }

@@ -6,12 +6,13 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane alignment="center" gridLinesVisible="true" hgap="10" prefHeight="143.0" prefWidth="173.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sender.Controller">
+<GridPane alignment="center" hgap="10" prefHeight="143.0" prefWidth="173.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sender.Controller">
    <children>
       <ImageView fx:id="f_image" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
       <Button fx:id="btn_load" minWidth="-Infinity" mnemonicParsing="false" onAction="#onclick_btn_load" text="загрузить" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
       <Button fx:id="btn_send" minWidth="-Infinity" mnemonicParsing="false" onAction="#onclick_btn_send" text="отправить" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
       <Button fx:id="btn_selfile" minWidth="-Infinity" mnemonicParsing="false" onAction="#onclick_btn_selfile" text="выбор файла" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+      <Button fx:id="btn_account" mnemonicParsing="false" onAction="#onclick_btn_account" text="account" GridPane.rowIndex="2" />
    </children>
    <columnConstraints>
       <ColumnConstraints />
