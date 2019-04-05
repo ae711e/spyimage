@@ -7,10 +7,15 @@
 
 package receiver;
 
+import ae.R;
 import dialog.FileSelect;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+
+import javax.mail.*;
+import java.util.Properties;
 
 public class Controller
 {
@@ -19,6 +24,8 @@ public class Controller
   @FXML
   Button btn_save;
 
+  @FXML
+  Button  btn_readlist;
 
   public void onclick_btn_save(ActionEvent ae)
   {
@@ -31,12 +38,76 @@ public class Controller
 
   /**
    * Открыть настройку акаунта почты
-   * @param ae
+   * @param ae событие
    */
   public void onclick_btn_account(ActionEvent ae)
   {
     dialog.Account  acc = new dialog.Account();
     acc.openDialog(ae);
   }
+
+  /**
+   * Прочитать список писем
+   * @param ae  событие
+   */
+  public void onclick_btn_readlist(ActionEvent ae)
+  {
+    Button  btn = (Button) ae.getSource();
+    String  txt = btn.getText();
+    System.out.println("Нажали кнопку <" + txt + ">");
+    String str = readmails();
+    System.out.println(str);
+  }
+
+  public class PopupAuthenticator extends Authenticator {
+
+    public PasswordAuthentication getPasswordAuthentication() {
+      String username, password;
+
+      username = R.SmtpServerUser;
+      password = R.SmtpServerPwd;
+
+      return new PasswordAuthentication(username, password);
+    }
+  }
+
+  private String  readmails()
+  {
+    // @see http://javatutor.net/articles/receiving-mail-with-mail-api
+    // Настроить аутентификацию, получить session
+    Authenticator auth = new PopupAuthenticator();
+    // Свойства установки
+    Properties props = System.getProperties();
+    props.put("mail.pop3.host", R.SmtpServer);
+    Session session = Session.getDefaultInstance(props, auth);
+    try {
+      // Получить store
+      Store store = session.getStore("pop3");
+      store.connect();
+      // Получить folder
+      Folder folder = store.getFolder("INBOX");
+      folder.open(Folder.READ_ONLY);
+      // Получить каталог
+      Message message[] = folder.getMessages();
+      // Отобразить поля from (только первый отправитель) и subject сообщений
+      for (int i=0, n=message.length; i<n; i++) {
+        System.out.println(i + ": "
+            + message[i].getFrom()[0]
+            + "\t" + message[i].getSubject());
+      }
+
+      // Закрыть соединение
+      folder.close(false);
+      store.close();
+    } catch (Exception e) {
+      System.err.println("Ошибка чтения почты: " + e.getMessage());
+      return "error";
+    }
+
+
+    return "-\n";
+  }
+
+
 
 } // end of class

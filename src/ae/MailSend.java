@@ -44,9 +44,6 @@ public class MailSend {
         LocalDateTime dt = LocalDateTime.now();
         String sDat = dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
         String otv = null;
-        // TODO убрать когда закончится отладка
-        /// adrEmail = "par1812@ya.ru";
-        //
         try {
             message = message + "\r\n" + sDat+ "\r\n"; // + sms (подпись для SMS-сервиса)
             //
