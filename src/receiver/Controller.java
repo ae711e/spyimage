@@ -73,7 +73,13 @@ public class Controller
 
   private String  readmails()
   {
+    int i, j, n;
     // @see http://javatutor.net/articles/receiving-mail-with-mail-api
+    // http://prostoitblog.ru/poluchenie-pochti-java-mail/
+    // https://www.pvsm.ru/java/16472
+    // http://toolkas.blogspot.com/2019/02/java.html
+    // http://java-online.ru/javax-mail.xhtml
+    //
     // Настроить аутентификацию, получить session
     Authenticator auth = new PopupAuthenticator();
     // Свойства установки
@@ -88,12 +94,28 @@ public class Controller
       Folder folder = store.getFolder("INBOX");
       folder.open(Folder.READ_ONLY);
       // Получить каталог
-      Message message[] = folder.getMessages();
+      Message[] message = folder.getMessages();
+      Message m;
       // Отобразить поля from (только первый отправитель) и subject сообщений
-      for (int i=0, n=message.length; i<n; i++) {
-        System.out.println(i + ": "
-            + message[i].getFrom()[0]
-            + "\t" + message[i].getSubject());
+      for (j=0, n=message.length; j<n; j++) {
+        m = message[j];
+        Multipart mp = (Multipart) m.getContent();
+
+        String fn = m.getFileName();
+        System.out.println(j + ": "
+            + m.getFrom()[0]
+            + " " + m.getSubject()
+            + " " + fn);
+        // Вывод содержимого в консоль
+        for (i = 0; i < mp.getCount(); i++){
+          BodyPart  bp = mp.getBodyPart(i);
+          if (bp.getFileName() == null)
+            System.out.println("    " + i + ". сообщение : '" +
+                bp.getContent() + "'");
+          else
+            System.out.println("    " + i + ". файл : '" +
+                bp.getFileName() + "'");
+        }
       }
 
       // Закрыть соединение
