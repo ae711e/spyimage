@@ -83,8 +83,7 @@ class Model
       if(crypt != null) {
         // запишем зашифрованный файл
         String outFileName = fileName + ".dat";
-        Path path = Paths.get(outFileName);
-        Files.write(path, crypt);
+        Files.write(Paths.get(outFileName), crypt);
         return outFileName;
       }
     } catch (Exception e) {
