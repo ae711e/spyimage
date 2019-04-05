@@ -117,7 +117,6 @@ public class Controller
                 bp.getFileName() + "'");
         }
       }
-
       // Закрыть соединение
       folder.close(false);
       store.close();
