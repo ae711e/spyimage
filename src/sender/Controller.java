@@ -80,7 +80,7 @@ public class Controller implements Initializable
 
   /**
    * Отправить картинку адресату по почте
-   * @param ae
+   * @param ae  событие
    */
   public void onclick_btn_send(ActionEvent ae)
   {
@@ -97,7 +97,7 @@ public class Controller implements Initializable
 
   /**
    * Открыть настройку акаунта почты
-   * @param ae
+   * @param ae  событие
    */
   public void onclick_btn_account(ActionEvent ae)
   {
@@ -107,7 +107,7 @@ public class Controller implements Initializable
 
   /**
    * При изменении списка получателей заполнить поле "получатель"
-   * @param ae
+   * @param ae  событие
    */
   public void onaction_cmb_users(ActionEvent ae)
   {

@@ -95,9 +95,8 @@ public class MyCrypto {
    * Зашифровать байты по алгоритму RSA
    * @param mess  исходное сообщение
    * @return  зашифрованное сообщение
-   * @throws GeneralSecurityException
    */
-  protected byte[] encryptRSA(byte[] mess) throws GeneralSecurityException
+  private byte[] encryptRSA(byte[] mess) throws GeneralSecurityException
   {
     final Cipher cipher = Cipher.getInstance(ALGORITHM);
     cipher.init(Cipher.ENCRYPT_MODE, this.k_publicKey);
@@ -148,7 +147,7 @@ public class MyCrypto {
    * @param cryptMess  зашифрованные байты
    * @return  расшифрованные байты сообщения
    */
-  protected byte[]  decryptRSA(byte[] cryptMess) throws GeneralSecurityException
+  private byte[]  decryptRSA(byte[] cryptMess) throws GeneralSecurityException
   {
     final Cipher cipher = Cipher.getInstance(ALGORITHM);
     cipher.init(Cipher.DECRYPT_MODE, this.k_privateKey);
@@ -162,7 +161,7 @@ public class MyCrypto {
    * @param cryptMess зашифрованные байты
    * @return  расшифрованные байты сообщения
    */
-  protected byte[]  decryptAES(byte[] key,byte[] cryptMess) throws GeneralSecurityException
+  private byte[]  decryptAES(byte[] key,byte[] cryptMess) throws GeneralSecurityException
   {
     final Cipher cipher = Cipher.getInstance(ALGORITHM_SIMMETRIC);
     SecretKeySpec secretKey = new SecretKeySpec(key, ALGORITHM_SIMMETRIC);
@@ -190,10 +189,8 @@ public class MyCrypto {
    * Восстановить приватный ключ из строки hex (16-ричных символов)
    * @param hexStr  строка hex(16-ричных) символов
    * @return  приватный ключ
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeySpecException
    */
-  protected PrivateKey restorePrivate(String hexStr) throws NoSuchAlgorithmException, InvalidKeySpecException
+  private PrivateKey restorePrivate(String hexStr) throws NoSuchAlgorithmException, InvalidKeySpecException
   {
     KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
     byte[] b = hex2Byte(hexStr);    // сделаем, требуемый байтовый массив
@@ -245,7 +242,7 @@ public class MyCrypto {
   }
 */
 
-  protected String byte2Hex(byte b[])
+  private String byte2Hex(byte[] b)
   {
     String hex = "";
     try {
@@ -277,7 +274,7 @@ public class MyCrypto {
    * @param b байты сообщения
    * @return  байты хэш-суммы
    */
-  protected byte[]  getHash(byte[] b)
+  private byte[]  getHash(byte[] b)
   {
     byte[] hashedBytes;
     try {
@@ -297,9 +294,8 @@ public class MyCrypto {
    * @param hash  байты хэша
    * @return  true - совпадает, false - не совпадает
    */
-  protected boolean checkHash(byte[] b, byte[] hash)
+  private boolean checkHash(byte[] b, byte[] hash)
   {
-    boolean res = false;
     byte[] hashedBytes = getHash(b);
     int l = hashedBytes.length;
     if(l != hash.length)
@@ -316,7 +312,7 @@ public class MyCrypto {
    * @param input входная строка
    * @return  выходная строка с переводами строк
    */
-  public String wrapLine(String input)
+  private String wrapLine(String input)
   {
     final int mmx = 44; // максимальная длина строки
     final int n = input.length();
@@ -355,19 +351,19 @@ public class MyCrypto {
   // Эксперимент с большими данными
 
   /**
-   * Зашифровать большое сообщение сеансовым ключом, который шифроуется открытым ключом
+   * Зашифровать большие данные сеансовым ключом, который шифруется открытым ключом
    * [сеансовый ключ] 128 байт
    * [хэш(MD5)+сообщение]
-   * @param text  входное сообщение
-   * @return  зашифрованное сообщение
+   * @param mess  входные данные
+   * @return  зашифрованные данные
    */
-  public String encryptBig(String text)
+  public byte[] encryptBigData(byte[] mess)
   {
-    String otvet = "<encrypt error> ";
-    byte[] hash_mess;
+    byte[] otvet;     // ответ - зашифрованные данные
+    byte[] hash_mess; // рабочий буфер
     // подготовим сообщение к шифрованию, добавим в начало хэш-сумму
     try {
-      byte[] mess = text.getBytes();  // байты сообщения
+      // mess - байты сообщения
       byte[] hash = getHash(mess);    // получим HASH_LENGTH байт хэш-суммы сообщения
       // создадим выходной поток, в которой пеместим хэш и текст сообщения
       ByteArrayOutputStream bom = new ByteArrayOutputStream(hash.length + mess.length);
@@ -377,8 +373,8 @@ public class MyCrypto {
       bom.write(mess);
       hash_mess = bom.toByteArray();  // массив хэш + сообщение
     } catch (IOException ex) {
-      otvet = otvet + " " + ex.getMessage();
-      return otvet;
+      System.err.println("?-Error-encryptBigData(): " + ex.getMessage());
+      return null;
     }
     // случайный ключ сеанса
     SecureRandom random = new SecureRandom();
@@ -393,64 +389,115 @@ public class MyCrypto {
       // [зашифрованное AES хэш сумма + сообщение]
       bos.write(cryptSesKey);
       bos.write(cryptText);
-      byte[] bo = bos.toByteArray();
-      String res = byte2Hex(bo);    // разбить на строки
-      otvet = wrapLine(res);
+      otvet = bos.toByteArray();
     } catch (IOException | GeneralSecurityException ex) {
       //eх.printStackTrace();
-      otvet = otvet + " " + ex.getMessage();
+      System.err.println("?-Error-encryptBigData(): " + ex.getMessage());
+      return null;
     }
     return otvet;
   }
 
   /**
-   * Расшифровать большое сообщение. Расшифровав сеансовый ключ приватным ключом,
+   * Зашифровать большие входные данные сеансовым ключом, который шифруется
+   * открытым ключом в зашифрованный текст.
+   * [сеансовый ключ] 128 байт
+   * [хэш(MD5)+сообщение]
+   * @param inputData  входные данные
+   * @return  зашифрованное текстовое сообщение
+   */
+  public String encryptText(byte[] inputData)
+  {
+    byte[] crypt_mess = encryptBigData(inputData);
+    if(crypt_mess == null)
+      return "<encrypt error>";
+    String res = byte2Hex(crypt_mess);    // перевести в HEX
+    String otvet = wrapLine(res);         // разбить на строки
+    return otvet;
+  }
+
+  /**
+   * Зашифровать большое текстовое сообщение сеансовым ключом, который шифруется
+   * открытым ключом в зашифрованный текст.
+   * [сеансовый ключ] 128 байт
+   * [хэш(MD5)+сообщение]
+   * @param text  входное сообщение
+   * @return  зашифрованное текстовое сообщение
+   */
+  public String encryptText(String text)
+  {
+    byte[] bt = text.getBytes();
+    String otvet = encryptText(bt);
+    return otvet;
+  }
+
+  /**
+   * Расшифровать большие данные. Расшифровав сеансовый ключ приватным ключом,
    * а затем расшифровав хэш-сумму(16 байт) + сообщение. После чего, сообщение проверить
    * на совпадение хэш-суммы (MD5).
-   * @param message
+   * @param cryptoData зашифрованные данные
    * @return
    */
-  public String decryptBig(String message)
+  public byte[] decryptBigData(byte[] cryptoData)
   {
     int l, lk, i, j;
-    String otvet = "<error decrypt> "; // ответ в случае ошибки раскодирования
+    byte[] mess;          // расшифрованное сообщение
     byte[] decrHashMess;
     try {
-      String mess = onlyHex(message);     // hex символы
-      byte[] crypto = hex2Byte(mess);     // зашифрованные байты
-      //
-      l = crypto.length;                  // длина общего массивы
-      lk = ALGORITHM_LENGTH;              // длина массива зашифрованного ключа
+      l = cryptoData.length;      // длина общего массивы
+      lk = ALGORITHM_LENGTH;      // длина массива зашифрованного ключа
       //
       byte[] cryptSesKey = new byte[lk];            // байтовый массив с зашифрованным ключом
       byte[] cryptText = new byte[l - lk];          // байтовый массив с зашифрованным сообщением
-      for(i=0; i < lk; i++) cryptSesKey[i] = crypto[i];
-      for(j=0; i < l;)      cryptText[j++] = crypto[i++];
+      for(i=0; i < lk; i++) cryptSesKey[i] = cryptoData[i];
+      for(j=0; i < l;)      cryptText[j++] = cryptoData[i++];
       byte[] sesKey = decryptRSA(cryptSesKey);      // расшифрованный ключ
-      decrHashMess = decryptAES(sesKey, cryptText); // расшифрованное сообщение hash + mess
+      decrHashMess  = decryptAES(sesKey, cryptText); // расшифрованное сообщение hash + mess
     } catch (NullPointerException | NegativeArraySizeException| ArrayIndexOutOfBoundsException | GeneralSecurityException ex) {
-      otvet = otvet + ex.getMessage();
-      return otvet;
+      System.err.println("?-Error-decryptBigData(): " + ex.getMessage());
+      return null;
     }
     // расшифровали хэш + сообщение проверим сообщение по хэшу
     try {
       l = decrHashMess.length;  // длина хэш+сообщение
       lk = HASH_LENGTH;         // длина хэш-суммы
       byte[] hash = new byte[HASH_LENGTH];
-      byte[] mess = new byte[l-lk];
+      mess = new byte[l-lk];
       for(i=0; i < lk; i++) hash[i] = decrHashMess[i];    // хэш-сумма
       for(j=0; i < l;)    mess[j++] = decrHashMess[i++];  // сообщение
       boolean ok = checkHash(mess, hash); // проверим хэш сумму сообщения
-      if(ok) {
-        otvet = new String(mess);
-      } else {
-        otvet = otvet + "ошибка контрольной суммы";
+      if(!ok) {
+        System.err.println("?-Error-decryptBigData(): ошибка контрольной суммы");
+        return null;
       }
     } catch (NegativeArraySizeException | NullPointerException | ArrayIndexOutOfBoundsException ex) {
-      otvet = otvet + ex.getMessage();
+      System.err.println("?-Error-decryptBigData(): " + ex.getMessage());
+      return null;
+    }
+    return mess;
+  }
+
+  /**
+   * Расшифровать большое сообщение. Расшифровав сеансовый ключ приватным ключом,
+   * а затем расшифровав хэш-сумму(16 байт) + сообщение. После чего, сообщение проверить
+   * на совпадение хэш-суммы (MD5).
+   * @param message зашифрованное соообщение
+   * @return
+   */
+  public String decryptText(String message)
+  {
+    String otvet = "<error decrypt> "; // ответ в случае ошибки раскодирования
+    try {
+      String mess     = onlyHex(message);       // hex символы
+      byte[] crypto   = hex2Byte(mess);         // зашифрованные байты
+      byte[] decrypt  = decryptBigData(crypto); // расшифрованные байты
+      if(decrypt != null)
+        otvet = new String(decrypt);            // расшифрованный текст
+    } catch (Exception ex) {
+      System.out.println("?-Error-decryptText(): " + ex.getMessage());
     }
     return otvet;
   }
 
-} // end of class
+} // end of class.
 
