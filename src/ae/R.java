@@ -29,14 +29,11 @@ public class R {
   static public Database  db;   // база данных проекта
 
   // тема письма с зашифрованным изображением документа
-  static public String  Subj_imagedoc  = "(spyimage)_Image_of_document_for_person";
+  final static public String  Subj_imagedoc  = "(spyimage)_Image_of_document_for_person";
   // тема письма с запросом о публичном ключе
-  static public String  Subj_askpubkey = "(spyimage)_Ask_give_me_Your_public_key";
+  final static public String  Subj_askpubkey = "(spyimage)_Ask_give_me_Your_public_key";
   // тема письма с ответом, содержащий public key
-  static public String  Subj_publickey = "(spyimage)_Please_get_my_public_key";
-
-
-
+  final static public String  Subj_publickey = "(spyimage)_Please_get_my_public_key";
 
   // final static String sep = System.getProperty("file.separator"); // разделитель имени каталогов
   static String ProxyServer = _r.proxyserv;  // proxy сервер
@@ -47,23 +44,20 @@ public class R {
   //
   // почтовые дела
   // адрес получателя почты (можно несколько с разделением по ;)
-  static String SmtpMailCC     = null;          // адрес получателя копии почты
+  static String SmtpMailCC     = null;              // адрес получателя копии почты
 
-  public static String Email = _r.email;       // адрес почты
-  public static String EmailUser = _r.emailuser;   // имя пользователя почтового сервера
-  public static String EmailPwd = _r.emailpwd;    // пароль пользователя почтового сервера
-  public static String SmtpServer = _r.smtpserver;       // адрес почтового сервера
-  public static String SmtpPort = _r.smtpport;   // (25) порт почтового сервера
+  public static String Email      = _r.email;       // адрес почты
+  public static String EmailUser  = _r.emailuser;   // имя пользователя почтового сервера
+  public static String EmailPwd   = _r.emailpwd;    // пароль пользователя почтового сервера
+  public static String SmtpServer = _r.smtpserver;  // адрес почтового сервера
+  public static String SmtpPort   = _r.smtpport;    // (25) порт почтового сервера
 
-  public static String ImapServer  = _r.imapserver;    // адрес почтового сервера
-  public static String ImapPort    = _r.imapport;    // порт
-  public static String ImapSSL     = "true";    // протокол SSL
-  public static String Pop3Server  = _r.pop3server;    // адрес почтового сервера
-  public static String Pop3Port    = _r.pop3port;    // порт
-  public static String Pop3SSL     = "false";    // протокол SSL
-  //public static String ImapUser    = _r.smtpserverpwd;    // пароль пользователя почтового сервера
-  //public static String ImapPwd     = _r.smtpserverpwd;    // пароль пользователя почтового сервера
-
+  public static String ImapServer = _r.imapserver;  // адрес почтового сервера
+  public static String ImapPort   = _r.imapport;    // порт
+  public static String ImapSSL    = "true";         // протокол SSL
+  public static String Pop3Server = _r.pop3server;  // адрес почтового сервера
+  public static String Pop3Port   = _r.pop3port;    // порт
+  public static String Pop3SSL    = "false";        // протокол SSL
 
   /**
    * Проверить наличие базы данных и создать нужные таблицы
