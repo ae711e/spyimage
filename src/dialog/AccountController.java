@@ -14,29 +14,37 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class AccountController {
 
   @FXML
-  TextField txt_SmtpSender;       // электронный адрес почты
+  TextField txt_Email;       // электронный адрес почты
+  @FXML
+  TextField txt_EmailUser;   // имя пользователя почтового сервера
+  @FXML
+  TextField txt_EmailPwd;    // пароль пользователя почтового сервера
 
   @FXML
   TextField txt_SmtpServer;       // адрес почтового сервера
+  @FXML
+  TextField txt_SmtpPort;   // порт почтового сервера для отправки
 
   @FXML
-  TextField txt_SmtpServerPortSend;   // порт почтового сервера для отправки
+  TextField txt_ImapServer;       // адрес почтового сервера для приема
+  @FXML
+  TextField txt_ImapPort;   // порт почтового сервера
+  @FXML
+  TextField txt_ImapSSL;   // протокол почтового сервера
 
   @FXML
-  TextField txt_SmtpServerPortRecv;   // порт почтового сервера для приема
-
+  TextField txt_Pop3Server;       // адрес почтового сервера для приема
   @FXML
-  TextField txt_SmtpServerUser;   // имя пользователя почтового сервера
-
+  TextField txt_Pop3Port;   // порт почтового сервера
   @FXML
-  TextField txt_SmtpServerPwd;    // пароль пользователя почтового сервера
+  TextField txt_Pop3SSL;   // протокол почтового сервера
+
 
   @FXML
   Button        btn_Ok;
@@ -49,12 +57,20 @@ public class AccountController {
    */
   public void getAccount() {
     R.getAccount();   // заполним данные учетной записи
-    txt_SmtpSender.setText(R.SmtpSender);       // электронный адрес почты
+    txt_Email.setText(R.Email);       // электронный адрес почты
+    txt_EmailUser.setText(R.EmailUser);   // имя пользователя почтового сервера
+    txt_EmailPwd.setText(R.EmailPwd);    // пароль пользователя почтового сервера
+
     txt_SmtpServer.setText(R.SmtpServer);       // адрес почтового сервера
-    txt_SmtpServerPortSend.setText(R.SmtpServerPortSend);   // порт почтового сервера для отправки
-    txt_SmtpServerPortRecv.setText(R.SmtpServerPortRecv);   // порт почтового сервера для приема
-    txt_SmtpServerUser.setText(R.SmtpServerUser);   // имя пользователя почтового сервера
-    txt_SmtpServerPwd.setText(R.SmtpServerPwd);    // пароль пользователя почтового сервера
+    txt_SmtpPort.setText(R.SmtpPort);   // порт почтового сервера для отправки
+
+    txt_ImapServer.setText(R.ImapServer); // адрес почтового сервера для приема
+    txt_ImapPort.setText(R.ImapPort);     // порт почтового сервера
+    txt_ImapSSL.setText(R.ImapSSL);       // протокол SSL почтового сервера
+
+    txt_Pop3Server.setText(R.Pop3Server); // адрес почтового сервера для приема
+    txt_Pop3Port.setText(R.Pop3Port);     // порт почтового сервера
+    txt_Pop3SSL.setText(R.Pop3SSL);       // протокол SSL почтового сервера
 
     //txt_name.setText(account.getName());
     //psw_pass.setText(account.getPass());
@@ -64,12 +80,18 @@ public class AccountController {
    * Запишем данные учетной записи после редактирования
    */
   void putAccount() {
-    R.SmtpSender          = txt_SmtpSender.getText();       // электронный адрес почты
-    R.SmtpServer          = txt_SmtpServer.getText();       // адрес почтового сервера
-    R.SmtpServerPortSend  = txt_SmtpServerPortSend.getText();   // порт почтового сервера для отправки
-    R.SmtpServerPortRecv  = txt_SmtpServerPortRecv.getText();   // порт почтового сервера для приема
-    R.SmtpServerUser      = txt_SmtpServerUser.getText();   // имя пользователя почтового сервера
-    R.SmtpServerPwd       = txt_SmtpServerPwd.getText();    // пароль пользователя почтового сервера
+    R.Email = txt_Email.getText();            // электронный адрес почты
+    R.EmailUser   = txt_EmailUser.getText();  // имя пользователя почтового сервера
+    R.EmailPwd    = txt_EmailPwd.getText();   // пароль пользователя почтового сервера
+    R.SmtpServer  = txt_SmtpServer.getText(); // адрес почтового сервера
+    R.SmtpPort    = txt_SmtpPort.getText();   // порт почтового сервера для отправки
+    R.ImapServer  = txt_ImapServer.getText(); // адрес почтового сервера для приема
+    R.ImapPort    = txt_ImapPort.getText();   // порт почтового сервера
+    R.ImapSSL     = txt_ImapSSL.getText();    // протокол SSL почтового сервера
+    R.Pop3Server  = txt_Pop3Server.getText(); // адрес почтового сервера для приема
+    R.Pop3Port    = txt_Pop3Port.getText();   // порт почтового сервера
+    R.Pop3SSL     = txt_Pop3SSL.getText();    // протокол SSL почтового сервера
+    //
     R.putAccount();   // заполним данные учетной записи в БД
   }
 

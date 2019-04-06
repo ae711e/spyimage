@@ -23,18 +23,32 @@
             <Font name="System Bold" size="15.0" />
          </font></Label>
       <Label text="электронный адрес почты" GridPane.rowIndex="1" />
-      <TextField fx:id="txt_SmtpSender" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Label text="адрес почтового сервера" GridPane.rowIndex="2" />
-      <Label text="порт сервера для отправки" GridPane.rowIndex="3" />
-      <Label text="порт сервера для приема" GridPane.rowIndex="4" />
-      <Label text="имя аутентификации для сервера" GridPane.rowIndex="5" />
-      <Label text="пароль аутентификации для сервера" GridPane.rowIndex="6" />
-      <TextField fx:id="txt_SmtpServer" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <TextField fx:id="txt_SmtpServerPortSend" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-      <TextField fx:id="txt_SmtpServerPortRecv" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-      <TextField fx:id="txt_SmtpServerUser" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-      <TextField fx:id="txt_SmtpServerPwd" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-      <HBox minHeight="20.0" minWidth="100.0" spacing="20.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="8">
+      <TextField fx:id="txt_Email" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Label text="имя аутентификации для сервера" GridPane.rowIndex="2" />
+      <TextField fx:id="txt_EmailUser" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Label text="пароль аутентификации для сервера" GridPane.rowIndex="3" />
+      <TextField fx:id="txt_EmailPwd" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+      <Label text="адрес SMTP сервера для отправки" GridPane.rowIndex="4" />
+      <TextField fx:id="txt_SmtpServer" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <Label text="порт SMTP сервера для отправки" GridPane.rowIndex="5" />
+      <TextField fx:id="txt_SmtpPort" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+      <Label text="адрес IMAP сервера для приема" GridPane.rowIndex="6" />
+      <TextField fx:id="txt_ImapServer" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+      <Label text="порт IMAP сервера для приема" GridPane.rowIndex="7" />
+      <TextField fx:id="txt_ImapPort" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+      <Label text="протокол SSL IMAP сервера" GridPane.rowIndex="8" />
+      <TextField fx:id="txt_ImapSSL" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+
+      <Label text="адрес POP3 сервера для приема" visible="false" GridPane.rowIndex="9" />
+      <TextField fx:id="txt_Pop3Server" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+      <Label text="порт POP3 сервера для приема" visible="false" GridPane.rowIndex="10" />
+      <TextField fx:id="txt_Pop3Port" visible="false"  GridPane.columnIndex="1" GridPane.rowIndex="10" />
+      <Label text="протокол SSL POP3 сервера" visible="false" GridPane.rowIndex="11" />
+      <TextField fx:id="txt_Pop3SSL" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+
+      <HBox minHeight="20.0" minWidth="100.0" spacing="20.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="12">
          <children>
             <Button fx:id="btn_Ok" defaultButton="true" mnemonicParsing="false" onAction="#click_btn_Ok" text="OK" />
             <Button fx:id="btn_Cancel" alignment="BASELINE_RIGHT" cancelButton="true" contentDisplay="CENTER" mnemonicParsing="false" onAction="#click_Btn_Cancel" text="Cancel" textAlignment="CENTER" />
@@ -49,6 +63,10 @@
       <ColumnConstraints />
    </columnConstraints>
    <rowConstraints>
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
       <RowConstraints />
       <RowConstraints />
       <RowConstraints />

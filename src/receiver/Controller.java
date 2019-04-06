@@ -11,7 +11,6 @@ import ae.R;
 import dialog.FileSelect;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 
 import javax.mail.*;
@@ -59,14 +58,10 @@ public class Controller
     System.out.println(str);
   }
 
-  public class PopupAuthenticator extends Authenticator {
-
+  public class EmailAuthenticator extends Authenticator {
     public PasswordAuthentication getPasswordAuthentication() {
-      String username, password;
-
-      username = R.SmtpServerUser;
-      password = R.SmtpServerPwd;
-
+      String username ="", password="";
+      //username = R.EmailUser; password = R.EmailPwd;
       return new PasswordAuthentication(username, password);
     }
   }
@@ -81,15 +76,25 @@ public class Controller
     // http://java-online.ru/javax-mail.xhtml
     //
     // Настроить аутентификацию, получить session
-    Authenticator auth = new PopupAuthenticator();
+    Authenticator auth = new EmailAuthenticator();
     // Свойства установки
     Properties props = System.getProperties();
-    props.put("mail.pop3.host", R.SmtpServer);
+    //props.put("mail.pop3.host", R.SmtpServer);
+    //
+    props.put("mail.debug"          , "false"  );
+    props.put("mail.store.protocol" , "imaps"  );
+    props.put("mail.imap.host",       R.ImapServer);
+    props.put("mail.imap.ssl.enable", R.ImapSSL );
+    props.put("mail.imap.port"      , R.ImapPort);
+    //
     Session session = Session.getDefaultInstance(props, auth);
     try {
       // Получить store
-      Store store = session.getStore("pop3");
-      store.connect();
+      Store store = session.getStore(); // "pop3"
+
+      // Подключение к почтовому серверу
+      store.connect(R.ImapServer, R.EmailUser, R.EmailPwd);
+      //store.connect();
       // Получить folder
       Folder folder = store.getFolder("INBOX");
       folder.open(Folder.READ_ONLY);
@@ -97,24 +102,39 @@ public class Controller
       Message[] message = folder.getMessages();
       Message m;
       // Отобразить поля from (только первый отправитель) и subject сообщений
-      for (j=0, n=message.length; j<n; j++) {
+      int nm = message.length;
+      for (j=0; j<nm; j++) {
         m = message[j];
-        Multipart mp = (Multipart) m.getContent();
-
-        String fn = m.getFileName();
-        System.out.println(j + ": "
-            + m.getFrom()[0]
-            + " " + m.getSubject()
-            + " " + fn);
+        String from = m.getFrom()[0].toString(); // первый отправитель
+        String subj = m.getSubject();
+        System.out.println(j + ": " + from + " " + subj);
         // Вывод содержимого в консоль
-        for (i = 0; i < mp.getCount(); i++){
-          BodyPart  bp = mp.getBodyPart(i);
-          if (bp.getFileName() == null)
-            System.out.println("    " + i + ". сообщение : '" +
-                bp.getContent() + "'");
-          else
-            System.out.println("    " + i + ". файл : '" +
-                bp.getFileName() + "'");
+        Object content;
+        String contype;
+        Multipart mp;
+        contype = m.getContentType();
+        content = m.getContent();
+        if(contype.contains("multipart")) {
+          try {
+            mp = (Multipart) content;
+            // Вывод содержимого в консоль
+            n = mp.getCount();
+            for (i = 0; i < n; i++) {
+              BodyPart bp = mp.getBodyPart(i);
+              if (bp.getFileName() == null)
+                System.out.println("    " + i + ". текст ");
+              else
+                System.out.println("    " + i + ". файл : '" + bp.getFileName() + "'");
+            }
+          } catch (Exception e) {
+            System.err.printf(e.getMessage());
+
+          }
+        } else {
+          // простая строка
+          String scont;
+          scont = (String) content;
+          System.out.println("content: length " + scont.length());
         }
       }
       // Закрыть соединение

@@ -25,9 +25,18 @@ public class R {
   final static String Ver = "1.0"; // номер версии
 
   // рабочая БД
-  //public static String  WorkDB = "C:/tmp/asrevizor.db";
-  static String WorkDB = "spyimage.db";   // CentOs Linux (в Windows будет D:\var\Gmir\asrevizor.db)
+  static String WorkDB = "spyimage.db";   // CentOs Linux (в Windows будет D:\var\Gmir\*.db)
   static public Database  db;   // база данных проекта
+
+  // тема письма с зашифрованным изображением документа
+  static public String  Subj_imagedoc  = "(spyimage)_Image_of_document_for_person";
+  // тема письма с запросом о публичном ключе
+  static public String  Subj_askpubkey = "(spyimage)_Ask_give_me_Your_public_key";
+  // тема письма с ответом, содержащий public key
+  static public String  Subj_publickey = "(spyimage)_Please_get_my_public_key";
+
+
+
 
   // final static String sep = System.getProperty("file.separator"); // разделитель имени каталогов
   static String ProxyServer = _r.proxyserv;  // proxy сервер
@@ -38,21 +47,43 @@ public class R {
   //
   // почтовые дела
   // адрес получателя почты (можно несколько с разделением по ;)
-  static String SmtpMailCC     = _r.smtpmailcc;          // адрес получателя копии почты
+  static String SmtpMailCC     = null;          // адрес получателя копии почты
 
-  public static String SmtpSender     = _r.smtpsender;       // адрес отправителя почты
-  public static String SmtpServer     = _r.smtpserver;       // адрес почтового сервера
-  public static String SmtpServerPortSend = _r.smtpserverportsend;   // порт почтового сервера
-  public static String SmtpServerPortRecv = _r.smtpserverportrecv;   // порт почтового сервера приема
-  public static String SmtpServerUser = _r.smtpserveruser;   // имя пользователя почтового сервера
-  public static String SmtpServerPwd  = _r.smtpserverpwd;    // пароль пользователя почтового сервера
+  public static String Email = _r.email;       // адрес почты
+  public static String EmailUser = _r.emailuser;   // имя пользователя почтового сервера
+  public static String EmailPwd = _r.emailpwd;    // пароль пользователя почтового сервера
+  public static String SmtpServer = _r.smtpserver;       // адрес почтового сервера
+  public static String SmtpPort = _r.smtpport;   // (25) порт почтового сервера
+
+  public static String ImapServer  = _r.imapserver;    // адрес почтового сервера
+  public static String ImapPort    = _r.imapport;    // порт
+  public static String ImapSSL     = "true";    // протокол SSL
+  public static String Pop3Server  = _r.pop3server;    // адрес почтового сервера
+  public static String Pop3Port    = _r.pop3port;    // порт
+  public static String Pop3SSL     = "false";    // протокол SSL
+  //public static String ImapUser    = _r.smtpserverpwd;    // пароль пользователя почтового сервера
+  //public static String ImapPwd     = _r.smtpserverpwd;    // пароль пользователя почтового сервера
+
 
   /**
    * Проверить наличие базы данных и создать нужные таблицы
    */
   static void testDb()
   {
-    final String create_tables = "CREATE TABLE _Info(key VARCHAR(32) PRIMARY KEY, val text);CREATE TABLE keys (usr VARCHAR(255) PRIMARY KEY, publickey TEXT, privatekey TEXT, flag INT DEFAULT 0, wdat DATETIME DEFAULT (DATETIME('now', 'localtime')));INSERT INTO _Info(key) VALUES('SmtpSender');INSERT INTO _Info(key) VALUES('SmtpServer');INSERT INTO _Info(key) VALUES('SmtpServerPortSend');INSERT INTO _Info(key) VALUES('SmtpServerPortRecv');INSERT INTO _Info(key) VALUES('SmtpServerUser');INSERT INTO _Info(key) VALUES('SmtpServerPwd');";
+    final String create_tables =
+        "CREATE TABLE _Info(key VARCHAR(32)  PRIMARY KEY, val text);" +
+        "CREATE TABLE keys (usr VARCHAR(255) PRIMARY KEY, publickey TEXT, privatekey TEXT, flag INT DEFAULT 0, wdat DATETIME DEFAULT (DATETIME('now', 'localtime')));" +
+        "INSERT INTO _Info(key) VALUES('SmtpServer');" +
+        "INSERT INTO _Info(key) VALUES('SmtpPort');" +
+        "INSERT INTO _Info(key) VALUES('ImapServer');" +
+        "INSERT INTO _Info(key) VALUES('ImapPort');" +
+        "INSERT INTO _Info(key) VALUES('ImapSSL');" +
+        "INSERT INTO _Info(key) VALUES('Pop3Server');" +
+        "INSERT INTO _Info(key) VALUES('Pop3Port');" +
+        "INSERT INTO _Info(key) VALUES('Pop3SSL');" +
+        "INSERT INTO _Info(key) VALUES('Email');" +
+        "INSERT INTO _Info(key) VALUES('EmailUser');" +
+        "INSERT INTO _Info(key) VALUES('EmailPwd');";
     if(db == null) {
       db = new DatabaseSqlite(WorkDB);
       //
@@ -60,7 +91,8 @@ public class R {
       if (str == null) {
         // ошибка чтения из БД - создадим таблицу
         String ssql[] = create_tables.split(";"); // разобьем на отдельные операторы
-        for (String ss: ssql)  db.ExecSql(ss);
+        for (String ss: ssql)
+          db.ExecSql(ss);
       }
     }
   }
@@ -92,23 +124,35 @@ public class R {
   static public void getAccount()
   {
     // прочитать из БД значения часов выдержки
-    SmtpSender         = getInfo(db, "SmtpSender",     SmtpSender);        // адрес отправителя
-    SmtpServer         = getInfo(db, "SmtpServer",     SmtpServer);       // адрес почтового сервера
-    SmtpServerPortSend = getInfo(db, "SmtpServerPortSend", SmtpServerPortSend);      // порт сервера
-    SmtpServerPortRecv = getInfo(db, "SmtpServerPortRecv", SmtpServerPortRecv);      // порт сервера
-    SmtpServerUser     = getInfo(db, "SmtpServerUser", SmtpServerUser);        // имя пользователя для регистрации на сервере
-    SmtpServerPwd      = getInfo(db, "SmtpServerPwd",  SmtpServerPwd);        // пароль пользователя для регистрации на сервере
+    Email       = getInfo(db, "Email",      Email);       // адрес отправителя
+    EmailUser   = getInfo(db, "EmailUser",  EmailUser);   // имя пользователя для регистрации на сервере
+    EmailPwd    = getInfo(db, "EmailPwd",   EmailPwd);    // пароль пользователя для регистрации на сервере
+    SmtpServer  = getInfo(db, "SmtpServer", SmtpServer);  // адрес SMTP почтового сервера
+    SmtpPort    = getInfo(db, "SmtpPort",   SmtpPort);    // порт smpt сервера
+    ImapServer  = getInfo(db, "ImapServer", ImapServer);  // адрес IMAP почтового сервера
+    ImapPort    = getInfo(db, "ImapPort",   ImapPort);    // порт IMAP сервера
+    ImapSSL     = getInfo(db, "ImapSSL",    ImapSSL);     // протокол SSL IMAP сервера
+    Pop3Server  = getInfo(db, "Pop3Server", Pop3Server);  // адрес POP3 почтового сервера
+    Pop3Port    = getInfo(db, "Pop3Port",   Pop3Port);    // порт POP3 сервера
+    Pop3SSL     = getInfo(db, "Pop3SSL",    Pop3SSL);     // протокол SSL POP3 сервера
+
   }
 
   static public void putAccount()
   {
     // положить в БД значения аккаунта
-    putInfo(db, "SmtpSender",     SmtpSender);        // адрес отправителя
-    putInfo(db, "SmtpServer",     SmtpServer);       // адрес почтового сервера
-    putInfo(db, "SmtpServerPortSend", SmtpServerPortSend);      // порт сервера
-    putInfo(db, "SmtpServerPortRecv", SmtpServerPortRecv);      // порт сервера
-    putInfo(db, "SmtpServerUser", SmtpServerUser);        // имя пользователя для регистрации на сервере
-    putInfo(db, "SmtpServerPwd",  SmtpServerPwd);        // пароль пользователя для регистрации на сервере
+    putInfo(db, "Email",      Email);       // адрес отправителя
+    putInfo(db, "EmailUser",  EmailUser);   // имя пользователя для регистрации на сервере
+    putInfo(db, "EmailPwd",   EmailPwd);    // пароль пользователя для регистрации на сервере
+    putInfo(db, "SmtpServer", SmtpServer);  // адрес SMTP почтового сервера
+    putInfo(db, "SmtpPort",   SmtpPort);    // порт smpt сервера
+    putInfo(db, "ImapServer", ImapServer);  // адрес IMAP почтового сервера
+    putInfo(db, "ImapPort",   ImapPort);    // порт IMAP сервера
+    putInfo(db, "ImapSSL",    ImapSSL);     // протокол SSL IMAP сервера
+    putInfo(db, "Pop3Server", Pop3Server);  // адрес POP3 почтового сервера
+    putInfo(db, "Pop3Port",   Pop3Port);    // порт POP3 сервера
+    putInfo(db, "Pop3SSL",    Pop3SSL);     // протокол SSL POP3 сервера
+    //
   }
 
   /**

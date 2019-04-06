@@ -33,7 +33,7 @@ public class Account {
       AccountController dialog = fxmlLoader.getController();
       dialog.getAccount();  // загрузить данные в поля
       //
-      Scene scene = new Scene(parent, 500, 300);
+      Scene scene = new Scene(parent, 500, 500);
       Stage stage = new Stage();
       stage.initModality(Modality.APPLICATION_MODAL);
       stage.setScene(scene);

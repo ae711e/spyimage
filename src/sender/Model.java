@@ -36,7 +36,7 @@ class Model
     if(pk != null && pk.length() > 1) {
       String fout = encryptFile(fileAppend, pk);
       if(fout != null) {
-        subj = "(spyimage) Picture_for_Person: " + email;
+        subj = R.Subj_imagedoc + " " + email;
         mess = "Hello, dear friend! " + email + ".\r" + subj;
         app = fout;
       } else {
@@ -45,8 +45,9 @@ class Model
       }
     } else {
       System.out.println("Получатель " + email + " неизвестен, запросить у него public key");
-      subj = "(spyimage) Ask_your_public_key " + email;
-      mess = subj;
+      String ks = "My_address_is: [ " + R.Email + " ]";
+      subj = R.Subj_askpubkey + " , for " + email + " , " + ks;
+      mess = subj + ".\r\n " + ks + " .\r\n";
       app = null;
     }
     otv = msg.mailSend(email, subj, mess, app);
