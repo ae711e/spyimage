@@ -12,6 +12,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  * Ресурсный класс
@@ -333,39 +335,6 @@ public class R {
     db.ExecSql("UPDATE _Info SET val=" + val + " WHERE key='" + keyName + "'");
   }
 
-    /**
-   * Копировать содержимое таблицы в другую аналогичную таблицу
-   * @param db      база данных
-   * @param tabSrc  исходная таблица
-   * @param tabDst  таблица, куда записывают
-   * @return  кол-во скопированных записей
-   */
-  static int copyTab2Tab(Database db, String tabSrc, String tabDst)
-  {
-    int a = 0;
-    // получим набор полей
-    try {
-      Statement stm = db.getDbStatement();
-      ResultSet rst = stm.executeQuery("SELECT * FROM " + tabSrc);
-      ResultSetMetaData md = rst.getMetaData();
-      int Narr = md.getColumnCount();
-      StringBuilder nabor = new StringBuilder(256);
-      for (int i = 1; i <= Narr; i++) {
-        if(i > 1) nabor.append(",");
-        nabor.append(md.getColumnName(i));
-      }
-      rst.close();
-      // System.out.println(nabor);
-      String sql;
-      // синтаксис Sqlite!
-      sql = "INSERT OR IGNORE INTO " + tabDst + "(" + nabor + ") SELECT " + nabor + " FROM " + tabSrc;
-      a = db.ExecSql(sql);
-    } catch (Exception e) {
-      System.out.println("?-Error-don't copy table. " + e.getMessage());
-    }
-    return a;
-  }
-
   /**
    * преобразовать секунды UNIX эпохи в строку даты
    * @param unix  секунды эпохи UNIX
@@ -404,5 +373,23 @@ public class R {
 */
 
   /////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Выделить e-mail из входной строки
+   * @param inputStr входная строка
+   * @return строка e-mail или null если ажреса нет
+   */
+  public static String  extractEmail(String inputStr)
+  {
+    Matcher mat = email_pattern.matcher(inputStr);
+    if(mat.find()) {
+      String m = mat.group();
+      return m;
+    }
+    return null;
+  }
+  // регулярное выражение для выделения эл. адреса
+  private static Pattern email_pattern = Pattern.compile("[a-z0-9_.\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,4}",Pattern.CASE_INSENSITIVE);
+
 
 } // end of class

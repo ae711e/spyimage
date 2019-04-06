@@ -12,6 +12,8 @@ import ae.R;
 import javax.mail.*;
 import java.util.Properties;
 
+import static ae.R.extractEmail;
+
 class Model
 {
 //  private class EmailAuthenticator extends Authenticator {
@@ -61,9 +63,11 @@ class Model
       int nm = message.length;
       for (j=0; j<nm; j++) {
         m = message[j];
-        String from = m.getFrom()[0].toString(); // первый отправитель
+        String from, feml;
+        from = m.getFrom()[0].toString(); // первый отправитель
+        feml = extractEmail(from);  // выделим чистый e-mail
         String subj = m.getSubject();
-        System.out.println(j + ": " + from + " " + subj);
+        System.out.println(j + ": " + from + " " + feml + " " + subj);
         // Вывод содержимого в консоль
         Object content;
         String contype;
@@ -81,12 +85,11 @@ class Model
                 System.out.println("    " + i + ". текст ");
               else {
                 System.out.println("    " + i + ". файл : '" + bp.getFileName() + "'");
-                m.setFlag(Flags.Flag.DELETED, true);
+                // m.setFlag(Flags.Flag.DELETED, true);
               }
             }
           } catch (Exception e) {
-            System.err.printf(e.getMessage());
-
+            System.err.println(e.getMessage());
           }
         } else {
           // простая строка
@@ -108,4 +111,4 @@ class Model
   }
 
 
-}
+} // end of class
