@@ -41,8 +41,8 @@ public class Controller implements Initializable
 
   /**
    * Метод вызывается при инициализации контролера
-   * @param location
-   * @param resources
+   * @param location  URL
+   * @param resources ресурс
    */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -59,6 +59,10 @@ public class Controller implements Initializable
     onaction_cmb_users(null); // заполним поле адресата
   }
 
+  /**
+   * Загрузка изображения
+   * @param ae  событие
+   */
   public void onclick_btn_load(ActionEvent ae)
   {
     String str;
