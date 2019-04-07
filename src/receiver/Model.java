@@ -15,9 +15,8 @@ import javax.mail.internet.MimeUtility;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.Scanner;
 
 import static ae.R.extractEmail;
 
@@ -103,14 +102,15 @@ class Model
                 String attach = MimeUtility.decodeText(fileAttach);  // раскодируем на всякий случай имя файла
                 if(attach.contains(R.PubKeyFileName)) {
                   // имя файла похоже на имя публичного ключа
-                  // прочитаем публичный ключ и сохраним в БД
-                  InputStream inps = bp.getInputStream();
-                  int lfpk = inps.available(); // размер данных
-                  byte[] attachment = new byte[lfpk];
-                  inps.read(attachment);
-                  String sql = "INSERT INTO keys(usr,publickey) VALUES('"
-                      + from + "','"+ attach +"')";
+                  // прочитаем публичный ключ сразу в строку и сохраним в БД
+                  // http://qaru.site/questions/226/readconvert-an-inputstream-to-a-string
+                  InputStream inputStream = bp.getInputStream();
+                  Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+                  String result = s.hasNext() ? s.next() : "";
+                  String sql =
+                    "INSERT INTO keys(usr,publickey) VALUES('" + from + "','"+ result +"')";
                   R.db.ExecSql(sql);
+                  System.out.println("Добавили публичный ключ для " + from);
                 }
               }
             }
