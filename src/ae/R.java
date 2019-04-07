@@ -68,7 +68,7 @@ public class R {
   {
     final String create_tables =
         "CREATE TABLE _Info(key VARCHAR(32)  PRIMARY KEY, val text);" +
-        "CREATE TABLE keys (usr VARCHAR(255) PRIMARY KEY, publickey TEXT, privatekey TEXT, flag INT DEFAULT 0, wdat DATETIME DEFAULT (DATETIME('now', 'localtime')));" +
+        "CREATE TABLE keys (usr VARCHAR(255) PRIMARY KEY, publickey TEXT, privatekey TEXT, mykey INT unique, wdat DATETIME DEFAULT (DATETIME('now', 'localtime')));" +
         "INSERT INTO _Info(key) VALUES('SmtpServer');" +
         "INSERT INTO _Info(key) VALUES('SmtpPort');" +
         "INSERT INTO _Info(key) VALUES('ImapServer');" +

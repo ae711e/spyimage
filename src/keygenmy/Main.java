@@ -1,6 +1,6 @@
-package keygen;
+package keygenmy;
 /*
- Формирование ключа для получателя
+ Формирование собственного ключа для получателя
  */
 
 import ae.R;
@@ -14,9 +14,9 @@ public class Main extends Application {
 
   @Override
   public void start(Stage primaryStage) throws Exception {
-    Parent root = FXMLLoader.load(getClass().getResource("keygen.fxml"));
+    Parent root = FXMLLoader.load(getClass().getResource("keygenmy.fxml"));
     primaryStage.setTitle("Crypto Keys Gen");
-    primaryStage.setScene(new Scene(root, 800, 550));
+    primaryStage.setScene(new Scene(root, 700, 480));
     //primaryStage.getScene().getStylesheets().add("css/JMetroLightTheme.css");
     primaryStage.show();
   }

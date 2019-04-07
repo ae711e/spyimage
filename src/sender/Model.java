@@ -33,9 +33,11 @@ class Model
     //
     String usr = R.db.s2s(email);
     String pk  = R.db.Dlookup("SELECT publickey FROM keys WHERE usr=" + usr);
+    // есть публичный ключ?
     if(pk != null && pk.length() > 1) {
       String fout = encryptFile(fileAppend, pk);
       if(fout != null) {
+        // отправить зашифрованный документ
         subj = R.Subj_imagedoc + " " + email;
         mess = "Hello, dear friend! " + email + ".\r" + subj;
         app = fout;
@@ -44,10 +46,11 @@ class Model
         return false;
       }
     } else {
+      // запросить публичный ключ у получателя
       System.out.println("Получатель " + email + " неизвестен, запросить у него public key");
-      String ks = "My_address_is: [ " + R.Email + " ]";
-      subj = R.Subj_askpubkey + " , for " + email + " , " + ks;
-      mess = subj + ".\r\n " + ks + " .\r\n";
+      String ks = " to email address: [ " + R.Email + " ]";
+      subj = R.Subj_askpubkey + ks;
+      mess = subj + ".\r\n" + ks + " .\r\n";
       app = null;
     }
     otv = msg.mailSend(email, subj, mess, app);
