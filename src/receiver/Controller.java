@@ -46,6 +46,16 @@ public class Controller
   }
 
   /**
+   * Открыть настройку ключей
+   * @param ae событие
+   */
+  public void onclick_btn_mykeys(ActionEvent ae)
+  {
+    keygenmy.Dialog  dlg = new keygenmy.Dialog();
+    dlg.open(ae);
+  }
+
+  /**
    * Прочитать список писем
    * @param ae  событие
    */

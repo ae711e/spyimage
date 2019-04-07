@@ -24,6 +24,7 @@
       <Button fx:id="btn_account" mnemonicParsing="false" onAction="#onclick_btn_account" text="account" GridPane.rowIndex="3" />
       <TextArea fx:id="txt_spisok" prefHeight="200.0" prefWidth="200.0" promptText="список писем" GridPane.rowIndex="4" />
       <Button fx:id="btn_readlist" mnemonicParsing="false" onAction="#onclick_btn_readlist" text="список писем" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <Button fx:id="btn_mykeys" mnemonicParsing="false" onAction="#onclick_btn_mykeys" text="ключи" GridPane.columnIndex="1" GridPane.rowIndex="3" />
    </children>
    <columnConstraints>
       <ColumnConstraints />

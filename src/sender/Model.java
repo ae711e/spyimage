@@ -50,7 +50,7 @@ class Model
       System.out.println("Получатель " + email + " неизвестен, запросить у него public key");
       String ks = " to email address: [ " + R.Email + " ]";
       subj = R.Subj_askpubkey + ks;
-      mess = subj + ".\r\n" + ks + " .\r\n";
+      mess = subj + ".\r\n S uvageniem, abonent S.P.Y. Image.\r\n";
       app = null;
     }
     otv = msg.mailSend(email, subj, mess, app);

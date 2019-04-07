@@ -29,6 +29,10 @@ public class R {
   // рабочая БД
   static String WorkDB = "spyimage.db";   // CentOs Linux (в Windows будет D:\var\Gmir\*.db)
   static public Database  db;   // база данных проекта
+  // выдать временный каталог (завершается обратным слэшем)
+  public final static String TmpDir = System.getProperty("java.io.tmpdir");
+  // разделитель имени каталогов
+  public final static String sep = System.getProperty("file.separator");
 
   // тема письма с зашифрованным изображением документа
   final static public String  Subj_imagedoc  = "(spyimage)_Image_of_document_for_person";
@@ -36,6 +40,8 @@ public class R {
   final static public String  Subj_askpubkey = "(spyimage)_Ask_give_me_Your_public_key";
   // тема письма с ответом, содержащий public key
   final static public String  Subj_publickey = "(spyimage)_Please_get_my_public_key";
+  // имя файла с публичным ключом
+  final static public String  PubKeyFileName = "publickey.key";
 
   // final static String sep = System.getProperty("file.separator"); // разделитель имени каталогов
   static String ProxyServer = _r.proxyserv;  // proxy сервер
@@ -216,7 +222,7 @@ public class R {
    * @param fileName - имя файла
    * @return      true - записано, false - ошибка
    */
-  public boolean writeStr2File(String strTxt, String fileName)
+  public static boolean  writeStr2File(String strTxt, String fileName)
   {
       File f = new File(fileName);
       try {
@@ -224,8 +230,8 @@ public class R {
           out.write(strTxt);
           out.close();
       } catch(IOException ex) {
-          ex.printStackTrace();
-          return false;
+        System.err.println("?Error-writeStr2File() " + ex.getMessage());
+        return false;
       }
       return true;
   }
@@ -300,7 +306,7 @@ public class R {
   private static String getInfo(Database db, String keyName, String defaultValue)
   {
       String val = db.Dlookup("SELECT val FROM _Info WHERE key='" + keyName + "'");
-      if(val == null) {
+      if(val == null || val.length() < 1) {
           return defaultValue;
       }
       return val;

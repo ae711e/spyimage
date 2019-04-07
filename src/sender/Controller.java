@@ -110,6 +110,16 @@ public class Controller implements Initializable
   }
 
   /**
+   * Открыть настройку собственных ключей шифрования
+   * @param ae  событие
+   */
+  public void onclick_btn_mykeys(ActionEvent ae)
+  {
+    dialog.MyKeys  mk = new dialog.MyKeys();
+    mk.openDialog(ae);
+  }
+
+  /**
    * При изменении списка получателей заполнить поле "получатель"
    * @param ae  событие
    */
