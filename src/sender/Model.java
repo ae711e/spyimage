@@ -30,7 +30,7 @@ class Model
     String otv, subj, mess;
     MailSend msg = new MailSend();
     String  app;
-    //
+    // ключ, который записан на указанный e-mail
     String usr = R.db.s2s(email);
     String pk  = R.db.Dlookup("SELECT publickey FROM keys WHERE usr=" + usr);
     // есть публичный ключ?
@@ -64,7 +64,7 @@ class Model
   Collection<String> getKeysUsers()
   {
     // получим список имен из БД
-    ArrayList<String[]> ard = R.db.DlookupArray("SELECT usr FROM keys ORDER BY usr");
+    ArrayList<String[]> ard = R.db.DlookupArray("SELECT usr FROM keys ORDER BY mykey,usr");
     ArrayList<String> list = new ArrayList<>();
     for(String[] r: ard) list.add(r[0]); // добавим имя в массив
     return  list;
