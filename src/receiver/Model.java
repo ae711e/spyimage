@@ -8,6 +8,7 @@
 package receiver;
 
 import ae.MailSend;
+import ae.MyCrypto;
 import ae.R;
 
 import javax.mail.*;
@@ -15,6 +16,14 @@ import javax.mail.internet.MimeUtility;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -22,6 +31,8 @@ import static ae.R.extractEmail;
 
 class Model
 {
+  private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm");
+  private static final SimpleDateFormat sformat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 //  private class EmailAuthenticator extends Authenticator {
 //    public PasswordAuthentication getPasswordAuthentication() {
 //      String username, password;
@@ -30,10 +41,10 @@ class Model
 //    }
 //  }
 
-  String  readmails()
+  ArrayList<String[]>  readmails()
   {
     int i, j, n;
-    String strRes = "";
+    ArrayList<String[]> strRes = new ArrayList<>();
     // @see http://javatutor.net/articles/receiving-mail-with-mail-api
     // http://prostoitblog.ru/poluchenie-pochti-java-mail/
     // https://www.pvsm.ru/java/16472
@@ -153,9 +164,15 @@ class Model
                 if(attach.contains(".dat")) {
                   // имя файла с расширением dat могут содержать зашифрованнуое изображениепохоже на имя публичного ключа
                   // отметим это письмо
-                  strRes += from;
-                  strRes += "\r\n";
-                  continue;
+                  Date  dt = m.getReceivedDate();
+                  String sdt = sformat.format(dt);
+                  String[] r = new String[4];
+                  r[0] = "" + m.getMessageNumber();
+                  r[1] = sdt;
+                  r[2] = from;
+                  r[3] = attach;
+                  strRes.add(r);
+                  break;
                 }
               }
             }
@@ -166,9 +183,15 @@ class Model
       store.close();
     } catch (Exception e) {
       System.err.println("Ошибка чтения почты: " + e.getMessage());
-      return "error";
+      String[] r = new String[4];
+      r[1] = "error";
+      strRes.add(r);
     }
-
+    if(strRes.size() <1) {
+      String[] r = new String[4];
+      r[1] = "писем нет";
+      strRes.add(r);
+    }
     return strRes;
   }
 
@@ -205,7 +228,7 @@ class Model
    * Записать файл вложением из части сообщения во временный каталог
    * @param bp  часть тела сообщения
    */
-  private void writeAttachFile(BodyPart bp)
+  private String writeAttachFile(BodyPart bp)
   {
     try {
       if (bp.getFileName() != null) {
@@ -217,7 +240,7 @@ class Model
         File fout = new File(R.TmpDir, fname);
         InputStream inps = bp.getInputStream();
         FileOutputStream outs = new FileOutputStream(fout);
-        byte[] buf = new byte[4096];
+        byte[] buf = new byte[8192];
         int bytesRead;
         while ((bytesRead = inps.read(buf)) != -1) {
           outs.write(buf, 0, bytesRead);
@@ -225,10 +248,121 @@ class Model
         outs.close();
         inps.close();
         // m.setFlag(Flags.Flag.DELETED, true);
+        String foutnam;
+        foutnam = fout.getPath();
+        return foutnam;
       }
     } catch (Exception e) {
       System.out.println("?-Error-writeAttachFile() " + e.getMessage());
     }
+    return null;
+  }
+
+  /**
+   * Загрузить из почты файл, расшифровать его, сохранить на диск и вернуть имя файла
+   * @param mind  индекс почты
+   * @return
+   */
+  String  loadMailImage(int mind)
+  {
+    // Свойства установки
+    Properties props = System.getProperties();
+    //props.put("mail.pop3.host", R.SmtpServer);
+    //
+    props.put("mail.debug"          , "false"  );
+    props.put("mail.store.protocol" , "imaps"  );
+    props.put("mail.imap.host",       R.ImapServer);
+    props.put("mail.imap.ssl.enable", R.ImapSSL );
+    props.put("mail.imap.port"      , R.ImapPort);
+    //
+    String fdatname = null; // имя загифрованного файла
+    Session session = Session.getDefaultInstance(props, null);
+    try {
+      // Получить store
+      Store store = session.getStore(); // "pop3"
+
+      // Подключение к почтовому серверу
+      store.connect(R.ImapServer, R.EmailUser, R.EmailPwd);
+      //store.connect();
+      // Получить folder
+      Folder folder;
+      // Получить каталог
+      Message[] messages;
+      folder = store.getFolder("INBOX");
+      folder.open(Folder.READ_ONLY); //  READ_ONLY
+      messages = folder.getMessages();
+      // Отобразить поля from (только первый отправитель) и subject сообщений
+      int nm = messages.length;
+      for(int j = 0; j < nm; j++) {
+        Message m = messages[j];
+        if(m.getMessageNumber() == mind) {
+          nm = 0;
+          // нашли нужное сообщение
+          Object content = m.getContent();
+          // письмо может содержать вложения
+          // поищем их
+          Multipart mp = (Multipart) content;
+          for(int ip = 0, nmp = mp.getCount(); ip < nmp; ip++) {
+            BodyPart bp = mp.getBodyPart(ip); // часть сообщения
+            String fileAttach = bp.getFileName();
+            if (fileAttach != null) {
+              // файл вложения
+              String attach = MimeUtility.decodeText(fileAttach);  // раскодируем на всякий случай имя файла
+              if(attach.contains(".dat")) {
+                fdatname = writeAttachFile(bp);
+                break;
+              }
+            }
+          }
+
+        }
+      }
+      folder.close(false);
+      store.close();
+      //
+      if(fdatname != null)  {
+        System.out.println("Crypto file " + fdatname);
+        String  priv = R.db.Dlookup("SELECT privatekey FROM keys WHERE mykey=1");
+        if(priv  != null) {
+          String foutname = decryptFile(fdatname, priv);
+          return foutname;
+        } else {
+          System.err.println("Не заданы собственные ключи");
+        }
+
+      }
+
+    } catch (Exception e) {
+
+    }
+
+    return null;
+  }
+
+  /**
+   * Расшифровать файл приватным ключом и вернуть имя расшифрованного файла (без .dat)
+   * @param fileName  имя файла
+   * @param privateKey публичный ключ
+   * @return имя выходного файла
+   */
+  private String  decryptFile(String fileName, String privateKey)
+  {
+    MyCrypto crypto = new MyCrypto(null, privateKey);
+    try {
+      // @see https://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html#readAllBytes%28java.nio.file.Path%29
+      // @see https://ru.stackoverflow.com/questions/448553/%D0%9A%D0%B0%D0%BA-%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%B5%D1%81%D1%82%D0%B8-%D1%84%D0%B0%D0%B9%D0%BB-%D0%B2-%D0%BC%D0%B0%D1%81%D1%81%D0%B8%D0%B2-%D0%B1%D0%B0%D0%B9%D1%82%D0%BE%D0%B2
+      byte[] array = Files.readAllBytes(Paths.get(fileName));
+      byte[] decry = crypto.decryptBigData(array);
+      if(decry != null) {
+        // запишем расшифрованный файл
+        String outFileName = fileName.replaceAll("\\.dat$", "");
+        Files.write(Paths.get(outFileName), decry);
+        return outFileName;
+      }
+    } catch (Exception e) {
+      System.out.println("?-Error-encryptFile(): " + e.getMessage());
+    }
+    return null;
   }
 
 } // end of class
