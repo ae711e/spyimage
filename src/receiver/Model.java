@@ -131,7 +131,7 @@ class Model
                 // файл вложения
                 String attach = MimeUtility.decodeText(fileAttach);  // раскодируем на всякий случай имя файла
                 if(attach.contains(".dat")) {
-                  // имя файла с расширением dat могут содержать зашифрованнуое изображениепохоже на имя публичного ключа
+                  // имя файла с расширением dat могут содержать зашифрованное изображение
                   // отметим это письмо
                   Date  dt = m.getReceivedDate();
                   if(dt == null) dt = new Date();
@@ -174,7 +174,6 @@ class Model
   {
     String otv, subj, mess;
     MailSend msg = new MailSend();
-    String  app;
     //
     //String usr = R.db.s2s(R.Email);
     String pk  = R.db.Dlookup("SELECT publickey FROM keys WHERE mykey=1");

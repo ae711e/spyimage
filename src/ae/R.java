@@ -80,6 +80,7 @@ public class R {
         "INSERT INTO _Info(key) VALUES('RecvEmailPwd');" +
         "INSERT INTO _Info(key) VALUES('SendEmailUser');" +
         "INSERT INTO _Info(key) VALUES('SendEmailPwd');" +
+        "INSERT INTO _Info(key) VALUES('ServerProtocol');" +
         "INSERT INTO _Info(key) VALUES('SmtpServer');" +
         "INSERT INTO _Info(key) VALUES('SmtpPort');" +
         "INSERT INTO _Info(key) VALUES('ImapServer');" +
@@ -130,8 +131,11 @@ public class R {
   {
     // прочитать из БД значения часов выдержки
     Email       = getInfo(db, "Email",      Email);       // адрес отправителя
-    RecvEmailUser = getInfo(db, "RecvEmailUser", RecvEmailUser);   // имя пользователя для регистрации на сервере
-    RecvEmailPwd = getInfo(db, "RecvEmailPwd", RecvEmailPwd);    // пароль пользователя для регистрации на сервере
+    RecvEmailUser  = getInfo(db, "RecvEmailUser", RecvEmailUser);   // имя пользователя для приема писем
+    RecvEmailPwd   = getInfo(db, "RecvEmailPwd",  RecvEmailPwd);    // пароль пользователя для приема
+    SendEmailUser  = getInfo(db, "SendEmailUser", SendEmailUser);   // имя пользователя для передачи писем
+    SendEmailPwd   = getInfo(db, "SendEmailPwd",  SendEmailPwd);    // пароль пользователя для передачи
+    ServerProtocol = getInfo(db, "ServerProtocol", ServerProtocol);  // протокол приема писем с почтового сервера
     SmtpServer  = getInfo(db, "SmtpServer", SmtpServer);  // адрес SMTP почтового сервера
     SmtpPort    = getInfo(db, "SmtpPort",   SmtpPort);    // порт smpt сервера
     ImapServer  = getInfo(db, "ImapServer", ImapServer);  // адрес IMAP почтового сервера
@@ -147,8 +151,11 @@ public class R {
   {
     // положить в БД значения аккаунта
     putInfo(db, "Email",      Email);       // адрес отправителя
-    putInfo(db, "RecvEmailUser", RecvEmailUser);   // имя пользователя для регистрации на сервере
-    putInfo(db, "RecvEmailPwd", RecvEmailPwd);    // пароль пользователя для регистрации на сервере
+    putInfo(db, "RecvEmailUser",  RecvEmailUser);   // имя пользователя для регистрации на сервере
+    putInfo(db, "RecvEmailPwd",   RecvEmailPwd);    // пароль пользователя для регистрации на сервере
+    putInfo(db, "SendEmailUser",  SendEmailUser);   // имя пользователя для передачи писем
+    putInfo(db, "SendEmailPwd",   SendEmailPwd);    // пароль пользователя для передачи
+    putInfo(db, "ServerProtocol", ServerProtocol);  // протокол приема писем с почтового сервера
     putInfo(db, "SmtpServer", SmtpServer);  // адрес SMTP почтового сервера
     putInfo(db, "SmtpPort",   SmtpPort);    // порт smpt сервера
     putInfo(db, "ImapServer", ImapServer);  // адрес IMAP почтового сервера

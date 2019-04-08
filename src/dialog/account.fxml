@@ -22,31 +22,30 @@
          <font>
             <Font name="System Bold" size="15.0" />
          </font></Label>
-      <Label text="электронный адрес почты" GridPane.rowIndex="1" />
-      <TextField fx:id="txt_Email" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Label text="имя аутентификации для сервера" GridPane.rowIndex="2" />
-      <TextField fx:id="txt_EmailUser" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <Label text="пароль аутентификации для сервера" GridPane.rowIndex="3" />
-      <TextField fx:id="txt_EmailPwd" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <Label text="электронный адрес почты" GridPane.rowIndex="1">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Label>
+      <TextField fx:id="txt_Email" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
+      <Label text="аутентификации для приема" GridPane.rowIndex="2" />
+      <TextField fx:id="txt_EmailUser" promptText="имя для приема" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Label text="аутентификации для отправки" GridPane.rowIndex="3" />
+      <TextField fx:id="txt_EmailPwd" prefWidth="100.0" promptText="пароль для приема" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="2" />
 
-      <Label text="адрес SMTP сервера для отправки" GridPane.rowIndex="4" />
-      <TextField fx:id="txt_SmtpServer" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-      <Label text="порт SMTP сервера для отправки" GridPane.rowIndex="5" />
-      <TextField fx:id="txt_SmtpPort" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <Label text="SMTP сервер для отправки" GridPane.rowIndex="4" />
+      <TextField fx:id="txt_SmtpServer" promptText="адрес сервера" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <Label text="протокол приема" GridPane.rowIndex="5" />
+      <TextField fx:id="txt_SmtpPort" prefWidth="100.0" promptText="порт сервера" GridPane.columnIndex="2" GridPane.rowIndex="4" />
 
-      <Label text="адрес IMAP сервера для приема" GridPane.rowIndex="6" />
-      <TextField fx:id="txt_ImapServer" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-      <Label text="порт IMAP сервера для приема" GridPane.rowIndex="7" />
-      <TextField fx:id="txt_ImapPort" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-      <Label text="протокол SSL IMAP сервера" GridPane.rowIndex="8" />
-      <TextField fx:id="txt_ImapSSL" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+      <Label text="IMAP сервер для приема" GridPane.rowIndex="6" />
+      <TextField fx:id="txt_ImapServer" promptText="адрес сервера" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+      <Label text="POP3 сервер для приема" GridPane.rowIndex="7" />
+      <TextField fx:id="txt_ImapPort" prefWidth="100.0" promptText="порт сервера" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+      <TextField fx:id="txt_ImapSSL" prefWidth="60.0" promptText="ssl imap" GridPane.columnIndex="3" GridPane.rowIndex="6" />
 
-      <Label text="адрес POP3 сервера для приема" visible="false" GridPane.rowIndex="9" />
-      <TextField fx:id="txt_Pop3Server" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-      <Label text="порт POP3 сервера для приема" visible="false" GridPane.rowIndex="10" />
-      <TextField fx:id="txt_Pop3Port" visible="false"  GridPane.columnIndex="1" GridPane.rowIndex="10" />
-      <Label text="протокол SSL POP3 сервера" visible="false" GridPane.rowIndex="11" />
-      <TextField fx:id="txt_Pop3SSL" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+      <TextField fx:id="txt_Pop3Server" promptText="адрес сервера" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+      <TextField fx:id="txt_Pop3Port" prefWidth="100.0" promptText="порт сервера" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+      <TextField fx:id="txt_Pop3SSL" prefWidth="60.0" promptText="ssl pop3" GridPane.columnIndex="3" GridPane.rowIndex="7" />
 
       <HBox minHeight="20.0" minWidth="100.0" spacing="20.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="12">
          <children>
@@ -57,8 +56,13 @@
             <Insets bottom="5.0" top="10.0" />
          </padding>
       </HBox>
+      <TextField promptText="имя для отправки" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <TextField prefWidth="100.0" promptText="пароль для отправки" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="3" />
+      <TextField fx:id="txt_ServerProtocol" promptText="imap или pop3" GridPane.columnIndex="1" GridPane.rowIndex="5" />
    </children>
    <columnConstraints>
+      <ColumnConstraints />
+      <ColumnConstraints />
       <ColumnConstraints />
       <ColumnConstraints />
    </columnConstraints>
