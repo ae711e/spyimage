@@ -35,7 +35,6 @@ public class Main extends Application {
 
   /**
    * Закрытие приложения
-   * @throws Exception
    */
   @Override
   public void stop() throws Exception {
