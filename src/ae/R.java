@@ -7,9 +7,6 @@
 package ae;
 
 import java.io.*;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -55,11 +52,14 @@ public class R {
   static String SmtpMailCC     = null;              // адрес получателя копии почты
 
   public static String Email      = _r.email;       // адрес почты
-  public static String EmailUser  = _r.emailuser;   // имя пользователя почтового сервера
-  public static String EmailPwd   = _r.emailpwd;    // пароль пользователя почтового сервера
+  public static String RecvEmailUser = _r.emailuser;   // имя пользователя получения от почтового сервера
+  public static String RecvEmailPwd = _r.emailpwd;    // пароль пользователя почтового сервера
+  public static String SendEmailUser  = null; // _r.emailuser;   // имя пользователя посылки почтового сервера
+  public static String SendEmailPwd   = null; //_r.emailpwd;    // пароль пользователя почтового сервера
   public static String SmtpServer = _r.smtpserver;  // адрес почтового сервера
   public static String SmtpPort   = _r.smtpport;    // (25) порт почтового сервера
 
+  public static String ServerProtocol = "pop3"; // imap pop3 протокол сервера
   public static String ImapServer = _r.imapserver;  // адрес почтового сервера
   public static String ImapPort   = _r.imapport;    // порт
   public static String ImapSSL    = "true";         // протокол SSL
@@ -75,6 +75,11 @@ public class R {
     final String create_tables =
         "CREATE TABLE _Info(key VARCHAR(32)  PRIMARY KEY, val text);" +
         "CREATE TABLE keys (usr VARCHAR(255) PRIMARY KEY, publickey TEXT, privatekey TEXT, mykey INT unique, wdat DATETIME DEFAULT (DATETIME('now', 'localtime')));" +
+        "INSERT INTO _Info(key) VALUES('Email');" +
+        "INSERT INTO _Info(key) VALUES('RecvEmailUser');" +
+        "INSERT INTO _Info(key) VALUES('RecvEmailPwd');" +
+        "INSERT INTO _Info(key) VALUES('SendEmailUser');" +
+        "INSERT INTO _Info(key) VALUES('SendEmailPwd');" +
         "INSERT INTO _Info(key) VALUES('SmtpServer');" +
         "INSERT INTO _Info(key) VALUES('SmtpPort');" +
         "INSERT INTO _Info(key) VALUES('ImapServer');" +
@@ -83,9 +88,7 @@ public class R {
         "INSERT INTO _Info(key) VALUES('Pop3Server');" +
         "INSERT INTO _Info(key) VALUES('Pop3Port');" +
         "INSERT INTO _Info(key) VALUES('Pop3SSL');" +
-        "INSERT INTO _Info(key) VALUES('Email');" +
-        "INSERT INTO _Info(key) VALUES('EmailUser');" +
-        "INSERT INTO _Info(key) VALUES('EmailPwd');";
+        "";
     if(db == null) {
       db = new DatabaseSqlite(WorkDB);
       //
@@ -127,8 +130,8 @@ public class R {
   {
     // прочитать из БД значения часов выдержки
     Email       = getInfo(db, "Email",      Email);       // адрес отправителя
-    EmailUser   = getInfo(db, "EmailUser",  EmailUser);   // имя пользователя для регистрации на сервере
-    EmailPwd    = getInfo(db, "EmailPwd",   EmailPwd);    // пароль пользователя для регистрации на сервере
+    RecvEmailUser = getInfo(db, "RecvEmailUser", RecvEmailUser);   // имя пользователя для регистрации на сервере
+    RecvEmailPwd = getInfo(db, "RecvEmailPwd", RecvEmailPwd);    // пароль пользователя для регистрации на сервере
     SmtpServer  = getInfo(db, "SmtpServer", SmtpServer);  // адрес SMTP почтового сервера
     SmtpPort    = getInfo(db, "SmtpPort",   SmtpPort);    // порт smpt сервера
     ImapServer  = getInfo(db, "ImapServer", ImapServer);  // адрес IMAP почтового сервера
@@ -144,8 +147,8 @@ public class R {
   {
     // положить в БД значения аккаунта
     putInfo(db, "Email",      Email);       // адрес отправителя
-    putInfo(db, "EmailUser",  EmailUser);   // имя пользователя для регистрации на сервере
-    putInfo(db, "EmailPwd",   EmailPwd);    // пароль пользователя для регистрации на сервере
+    putInfo(db, "RecvEmailUser", RecvEmailUser);   // имя пользователя для регистрации на сервере
+    putInfo(db, "RecvEmailPwd", RecvEmailPwd);    // пароль пользователя для регистрации на сервере
     putInfo(db, "SmtpServer", SmtpServer);  // адрес SMTP почтового сервера
     putInfo(db, "SmtpPort",   SmtpPort);    // порт smpt сервера
     putInfo(db, "ImapServer", ImapServer);  // адрес IMAP почтового сервера

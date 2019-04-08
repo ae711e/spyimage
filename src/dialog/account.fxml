@@ -42,11 +42,11 @@
       <TextField fx:id="txt_ImapSSL" GridPane.columnIndex="1" GridPane.rowIndex="8" />
 
       <Label text="адрес POP3 сервера для приема" visible="false" GridPane.rowIndex="9" />
-      <TextField fx:id="txt_Pop3Server" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+      <TextField fx:id="txt_Pop3Server" visible="true" GridPane.columnIndex="1" GridPane.rowIndex="9" />
       <Label text="порт POP3 сервера для приема" visible="false" GridPane.rowIndex="10" />
-      <TextField fx:id="txt_Pop3Port" visible="false"  GridPane.columnIndex="1" GridPane.rowIndex="10" />
+      <TextField fx:id="txt_Pop3Port" visible="true"  GridPane.columnIndex="1" GridPane.rowIndex="10" />
       <Label text="протокол SSL POP3 сервера" visible="false" GridPane.rowIndex="11" />
-      <TextField fx:id="txt_Pop3SSL" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+      <TextField fx:id="txt_Pop3SSL" visible="true" GridPane.columnIndex="1" GridPane.rowIndex="11" />
 
       <HBox minHeight="20.0" minWidth="100.0" spacing="20.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="12">
          <children>

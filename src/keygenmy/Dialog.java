@@ -20,8 +20,8 @@ public class Dialog {
   {
     try {
       Parent parent = FXMLLoader.load(getClass().getResource("keygenmy.fxml"));
-      //FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../keygenmy/keygenmy.fxml"));
-      //Parent parent = fxmlLoader.load();
+//      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("keygenmy.fxml"));
+//      Parent parent = fxmlLoader.load();
       Scene scene = new Scene(parent, 700, 480);
       Stage stage = new Stage();
       stage.initModality(Modality.APPLICATION_MODAL);

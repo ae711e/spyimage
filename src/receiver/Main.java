@@ -22,8 +22,8 @@ public class Main extends Application {
     Parent root = FXMLLoader.load(getClass().getResource("receiver.fxml"));
     primaryStage.getIcons().add(new Image("res/app.png"));
     primaryStage.setTitle("Прием изображения");
-    primaryStage.setScene(new Scene(root, 900, 600));
-    //primaryStage.getScene().getStylesheets().add("css/JMetroLightTheme.css"); //подключим стили
+    primaryStage.setScene(new Scene(root, 780, 780));
+    primaryStage.getScene().getStylesheets().add("css/JMetroLightTheme.css"); //подключим стили
     primaryStage.show();
   }
 

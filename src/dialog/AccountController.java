@@ -58,8 +58,8 @@ public class AccountController {
   public void getAccount() {
     R.getAccount();   // заполним данные учетной записи
     txt_Email.setText(R.Email);       // электронный адрес почты
-    txt_EmailUser.setText(R.EmailUser);   // имя пользователя почтового сервера
-    txt_EmailPwd.setText(R.EmailPwd);    // пароль пользователя почтового сервера
+    txt_EmailUser.setText(R.RecvEmailUser);   // имя пользователя почтового сервера
+    txt_EmailPwd.setText(R.RecvEmailPwd);    // пароль пользователя почтового сервера
 
     txt_SmtpServer.setText(R.SmtpServer);       // адрес почтового сервера
     txt_SmtpPort.setText(R.SmtpPort);   // порт почтового сервера для отправки
@@ -81,8 +81,8 @@ public class AccountController {
    */
   void putAccount() {
     R.Email = txt_Email.getText();            // электронный адрес почты
-    R.EmailUser   = txt_EmailUser.getText();  // имя пользователя почтового сервера
-    R.EmailPwd    = txt_EmailPwd.getText();   // пароль пользователя почтового сервера
+    R.RecvEmailUser = txt_EmailUser.getText();  // имя пользователя почтового сервера
+    R.RecvEmailPwd = txt_EmailPwd.getText();   // пароль пользователя почтового сервера
     R.SmtpServer  = txt_SmtpServer.getText(); // адрес почтового сервера
     R.SmtpPort    = txt_SmtpPort.getText();   // порт почтового сервера для отправки
     R.ImapServer  = txt_ImapServer.getText(); // адрес почтового сервера для приема
@@ -124,7 +124,7 @@ public class AccountController {
    */
   public void click_btn_Ok(ActionEvent ae)
   {
-    System.out.println("Click OK");
+    System.out.println("Данные аккаунта сохранены");
     //account.setName(txt_name.getText().trim());
     //account.setPass(psw_pass.getText().trim());
     //

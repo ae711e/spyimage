@@ -9,21 +9,29 @@ package receiver;
 
 import ae.R;
 import dialog.FileSelect;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
-public class Controller
+public class Controller extends OutputStream implements Initializable
 {
   Model model = new Model();
 
@@ -40,24 +48,87 @@ public class Controller
 
   @FXML
   ImageView f_image;
+  private String  fileNameImage;  // имя файла с изображением
 
   @FXML
-  Button btn_save;
+  Button    btn_save;
 
   @FXML
-  Button  btn_readlist;
+  Button    btn_readlist;
+
+  @FXML
+  Label     lbl_email;
+
+  @FXML
+  TextArea  txt_output;
+
+  ///////////////////////////////////////////////////////////////////
+  // Перенаправление стандартного вывода в TextArea
+  // class ... extends OutputStream implements Initializable {
+  // стандартный вывод System.output направил в поле txt_out
+  // https://code-examples.net/ru/q/19a134d
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    OutputStream out = new OutputStream() {
+      @Override
+      public void write(int b) throws IOException {
+        appendText(String.valueOf((char) b));
+      }
+      @Override
+      public void write(byte[] b, int off, int len) throws IOException {
+        appendText(new String(b, off, len));
+      }
+
+      @Override
+      public void write(byte[] b) throws IOException {
+        write(b, 0, b.length);
+      }
+    };
+    System.setOut(new PrintStream(out, true));
+    //
+    initialRun();
+  }
+
+  @Override
+  public void write(int b) {
+    Platform.runLater(() -> txt_output.appendText(""+b));
+  }
+
+  public void appendText(String str) {
+    Platform.runLater(() -> txt_output.appendText(str));
+  }
+
+  private void  initialRun()
+  {
+    lbl_email.setText(R.Email);
+  }
 
   private ObservableList<Stroka> usersData = FXCollections.observableArrayList();
 
   public void onclick_btn_save(ActionEvent ae)
   {
-    FileSelect fs = new dialog.FileSelect();
-    String fname = fs.saveDialog(ae);
-    System.out.println("Сохранить файл <" + fname + ">");
-
+    if(fileNameImage != null) {
+      // если файл с изображением есть, то выберем куда копировать
+      FileSelect fs = new dialog.FileSelect();
+      Matcher mt = Pattern.compile("\\.\\w+$",Pattern.CASE_INSENSITIVE)
+          .matcher(fileNameImage);
+      String  ext = mt.find()?mt.group().replace(".",""):null;
+      //
+      String fname = fs.saveDialog(ae, ext);
+      //System.out.println("Сохранить изображение в файл <" + fname + ">");
+      try {
+        // @see http://programador.ru/java-copy-file/
+        File src = new File(fileNameImage); // исходный файл
+        File dst = new File(fname);         // файл назначения
+        Files.copy(src.toPath(), dst.toPath());
+        System.out.println("Записан файл <" + fname + ">");
+      } catch (IOException e) {
+        System.out.println("Ошибка записи выходного файла: " + fname);
+      }
+    }
 
   }
-
 
   /**
    * Загрузить изображение из почты
@@ -70,9 +141,10 @@ public class Controller
     Stroka stro = selectionModel.getSelectedItem();
     if(stro != null) {
       int mind = Integer.parseInt(stro.getMind());
-      System.out.println("test " + mind);
+      // System.out.println("test " + mind);
       String fimg = model.loadMailImage(mind);
       if(fimg != null) {
+        this.fileNameImage = fimg;
         // загрузить изображение в контрол
         File file = new File(fimg);
         String uri = file.toURI().toString();
@@ -96,7 +168,7 @@ public class Controller
    * Открыть настройку ключей
    * @param ae событие
    */
-  public void onclick_btn_mykeys(ActionEvent ae)
+  public void onclick_btn_keys(ActionEvent ae)
   {
     keygenmy.Dialog  dlg = new keygenmy.Dialog();
     dlg.open(ae);
@@ -110,7 +182,7 @@ public class Controller
   {
     Button  btn = (Button) ae.getSource();
     String  txt = btn.getText();
-    System.out.println("Нажали кнопку <" + txt + ">");
+    // System.out.println("Нажали кнопку <" + txt + ">");
     ArrayList<String[]> arr = model.readmails();
     loadData(arr);
   }

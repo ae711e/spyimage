@@ -649,6 +649,11 @@
     -fx-font-size: 12px;
 }
 
+#btn_keys {
+    -fx-background-color: #bcbcbc;
+    -fx-font-size: 12px;
+}
+
 #btn_samples {
     -fx-background-color: #bcbcbc;
     -fx-font-size: 12px;

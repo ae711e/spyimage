@@ -98,7 +98,7 @@ public class Model {
   Collection<String>  getUsrsKeys()
   {
     // получим список имен из БД
-    ArrayList<String[]> ardb = db.DlookupArray("SELECT usr FROM keys ORDER BY mykey,usr");
+    ArrayList<String[]> ardb = db.DlookupArray("SELECT usr,mykey FROM keys WHERE (mykey) is null or mykey!=1 ORDER BY mykey,usr");
     ArrayList<String> collect = new ArrayList<>();
     for (String[] rst: ardb) {
       collect.add(rst[0]); // добавим имя в массив

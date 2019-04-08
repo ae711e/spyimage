@@ -7,26 +7,26 @@
 
 package sender;
 
+import ae.R;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.File;
+import java.io.*;
 import java.net.URL;
 import java.util.Collection;
 import java.util.ResourceBundle;
 
-public class Controller implements Initializable
+public class Controller extends OutputStream implements Initializable
 {
 
   Model model = new Model();
 
-  private String  fileImage;
+  private String fileNameImage;
   @FXML
   ImageView f_image;
   @FXML
@@ -38,17 +38,62 @@ public class Controller implements Initializable
   @FXML
   ComboBox<String>  cmb_users;  // список пользователей
 
+  @FXML
+  Label lbl_email;
+
+  @FXML
+  TextArea  txt_output;
+
+  ///////////////////////////////////////////////////////////////////
+  // Перенаправление стандартного вывода в TextArea
+  // class ... extends OutputStream implements Initializable {
+  // стандартный вывод System.output направил в поле txt_out
+  // https://code-examples.net/ru/q/19a134d
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    OutputStream out = new OutputStream() {
+      @Override
+      public void write(int b) throws IOException {
+        appendText(String.valueOf((char) b));
+      }
+      @Override
+      public void write(byte[] b, int off, int len) throws IOException {
+        appendText(new String(b, off, len));
+      }
+
+      @Override
+      public void write(byte[] b) throws IOException {
+        write(b, 0, b.length);
+      }
+    };
+    System.setOut(new PrintStream(out, true));
+    //
+    initialRun();
+  }
+
+  @Override
+  public void write(int b) throws IOException {
+    Platform.runLater(() -> txt_output.appendText(""+b));
+  }
+
+  public void appendText(String str) {
+    Platform.runLater(() -> txt_output.appendText(str));
+  }
 
   /**
    * Метод вызывается при инициализации контролера
-   * @param location  URL
-   * @param resources ресурс
    */
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
-    File file = new File("src/res/app.png");
-    String uri = file.toURI().toString();
-    f_image.setImage(new Image(uri));
+
+  private void initialRun()
+  {
+    lbl_email.setText(R.Email);
+    //
+    //File file = new File("src/res/app.png");
+    //String uri = file.toURI().toString();
+    //InputStream input2 = getClass().getResourceAsStream("src/res/app1.png");
+    Image image2 = new Image("res/appgray.png");
+    f_image.setImage(image2);
     //
     // заполним список пользователей про которых у нас есть ключи
     Collection<String> users = model.getKeysUsers();
@@ -67,14 +112,14 @@ public class Controller implements Initializable
   {
     String str;
     str = btn_load.getText();
-    System.out.println("Нажали кнопку \"" + str + "\" / " + ae.getEventType().getName());
+    // System.out.println("Нажали кнопку \"" + str + "\" / " + ae.getEventType().getName());
     //
     dialog.FileSelect  fs = new dialog.FileSelect();
-    String fname = fs.openDialog(ae);
-    System.out.println("Выбрали файл: <" + fname + ">");
+    String fname = fs.openDialog(ae, false);
+    // System.out.println("Выбрали файл: <" + fname + ">");
     //
     if(fname != null) {
-      fileImage = fname;
+      fileNameImage = fname;
       // @see https://stackoverflow.com/questions/22710053/how-can-i-show-an-image-using-the-imageview-component-in-javafx-and-fxml
       File file = new File(fname);
       String uri = file.toURI().toString();
@@ -90,12 +135,12 @@ public class Controller implements Initializable
   {
     String str;
     str = btn_send.getText();
-    System.out.println("Нажали кнопку <" + str + "> / " + ae.getEventType().getName());
+    // System.out.println("Нажали кнопку <" + str + "> / " + ae.getEventType().getName());
     str = txt_receiver.getText();   // адрес получателя
-    if(model.sendMailTo(str, fileImage)) {
-      System.out.println("Отправили почту");
+    if(model.sendMailTo(str, fileNameImage)) {
+      System.out.println("Отправили почту " + str);
     } else {
-      System.err.println("Почта не отправилась");
+      System.out.println("Ошибка отправки почты");
     }
   }
 
@@ -115,8 +160,8 @@ public class Controller implements Initializable
    */
   public void onclick_btn_mykeys(ActionEvent ae)
   {
-    dialog.MyKeys  mk = new dialog.MyKeys();
-    mk.openDialog(ae);
+    keygenmy.Dialog  dw = new keygenmy.Dialog();
+    dw.open(ae);
   }
 
   /**
@@ -127,7 +172,7 @@ public class Controller implements Initializable
   {
     String str;
     str = cmb_users.getValue(); // значение выбранноего элемента
-    System.out.println("Акция " + str);
+    // System.out.println("Акция " + str);
     txt_receiver.setText(str);
   }
 

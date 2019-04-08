@@ -13,33 +13,20 @@ import ae.R;
 
 import javax.mail.*;
 import javax.mail.internet.MimeUtility;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.MessageFormat;
+import java.io.*;
+import java.nio.file.*;
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Properties;
-import java.util.Scanner;
+import java.util.*;
 
 import static ae.R.extractEmail;
 
 class Model
 {
   private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm");
-  private static final SimpleDateFormat sformat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-//  private class EmailAuthenticator extends Authenticator {
-//    public PasswordAuthentication getPasswordAuthentication() {
-//      String username, password;
-//      username = R.EmailUser; password = R.EmailPwd;
-//      return new PasswordAuthentication(username, password);
-//    }
-//  }
+  private static final SimpleDateFormat sformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
 
   ArrayList<String[]>  readmails()
   {
@@ -51,27 +38,9 @@ class Model
     // http://toolkas.blogspot.com/2019/02/java.html
     // http://java-online.ru/javax-mail.xhtml
     // http://ryakovlev.blogspot.com/2014/11/java_17.html
-    //
-    // Настроить аутентификацию, получить session
-    //Authenticator auth = new EmailAuthenticator();
-    // Свойства установки
-    Properties props = System.getProperties();
-    //props.put("mail.pop3.host", R.SmtpServer);
-    //
-    props.put("mail.debug"          , "false"  );
-    props.put("mail.store.protocol" , "imaps"  );
-    props.put("mail.imap.host",       R.ImapServer);
-    props.put("mail.imap.ssl.enable", R.ImapSSL );
-    props.put("mail.imap.port"      , R.ImapPort);
-    //
-    Session session = Session.getDefaultInstance(props, null);
     try {
       // Получить store
-      Store store = session.getStore(); // "pop3"
-
-      // Подключение к почтовому серверу
-      store.connect(R.ImapServer, R.EmailUser, R.EmailPwd);
-      //store.connect();
+      Store store = openStore(); // открыть хранилище почтового сервера
       // Получить folder
       Folder folder;
       // Получить каталог
@@ -165,6 +134,7 @@ class Model
                   // имя файла с расширением dat могут содержать зашифрованнуое изображениепохоже на имя публичного ключа
                   // отметим это письмо
                   Date  dt = m.getReceivedDate();
+                  if(dt == null) dt = new Date();
                   String sdt = sformat.format(dt);
                   String[] r = new String[4];
                   r[0] = "" + m.getMessageNumber();
@@ -235,7 +205,7 @@ class Model
         String fn = bp.getFileName();
         // http://www.cyberforum.ru/java-j2se/thread1763814.html
         String fname = MimeUtility.decodeText(fn);  // декодируем имя почтового файла вложения
-        System.out.println("файл вложения: '" + fname + "'");
+        // System.out.println("файл вложения: '" + fname + "'");
         // запишем во временный каталог
         File fout = new File(R.TmpDir, fname);
         InputStream inps = bp.getInputStream();
@@ -265,25 +235,10 @@ class Model
    */
   String  loadMailImage(int mind)
   {
-    // Свойства установки
-    Properties props = System.getProperties();
-    //props.put("mail.pop3.host", R.SmtpServer);
-    //
-    props.put("mail.debug"          , "false"  );
-    props.put("mail.store.protocol" , "imaps"  );
-    props.put("mail.imap.host",       R.ImapServer);
-    props.put("mail.imap.ssl.enable", R.ImapSSL );
-    props.put("mail.imap.port"      , R.ImapPort);
-    //
-    String fdatname = null; // имя загифрованного файла
-    Session session = Session.getDefaultInstance(props, null);
+    String fdatname = null; // имя зашифрованного файла
     try {
       // Получить store
-      Store store = session.getStore(); // "pop3"
-
-      // Подключение к почтовому серверу
-      store.connect(R.ImapServer, R.EmailUser, R.EmailPwd);
-      //store.connect();
+      Store store = openStore(); // // открыть хранилище почтового сервера
       // Получить folder
       Folder folder;
       // Получить каталог
@@ -314,26 +269,23 @@ class Model
               }
             }
           }
-
         }
       }
       folder.close(false);
       store.close();
       //
       if(fdatname != null)  {
-        System.out.println("Crypto file " + fdatname);
+        // System.out.println("Crypto file " + fdatname);
         String  priv = R.db.Dlookup("SELECT privatekey FROM keys WHERE mykey=1");
         if(priv  != null) {
           String foutname = decryptFile(fdatname, priv);
           return foutname;
         } else {
-          System.err.println("Не заданы собственные ключи");
+          System.out.println("Не заданы собственные ключи");
         }
-
       }
-
     } catch (Exception e) {
-
+      System.out.println("?-Error-loadMailImage() " + e.getMessage());
     }
 
     return null;
@@ -365,4 +317,55 @@ class Model
     return null;
   }
 
+//  private class EmailAuthenticator extends Authenticator {
+//    public PasswordAuthentication getPasswordAuthentication() {
+//      String username, password;
+//      username = R.RecvEmailUser; password = R.RecvEmailPwd;
+//      return new PasswordAuthentication(username, password);
+//    }
+//  }
+  /**
+   * Получить хранилище почтового сервера и подключиться к нему
+   * @return
+   */
+  private Store openStore()
+  {
+    Store store;
+    //Authenticator auth = null;
+    // Свойства установки
+    Properties props = System.getProperties();
+    //
+    props.put("mail.debug", "false"  );
+    String  host;
+    if(R.ServerProtocol.contains("imap"))
+      host = R.ImapServer;
+    else
+      host = R.Pop3Server;
+    //
+    props.put("mail.store.protocol" , R.ServerProtocol);
+
+    props.put("mail.imap.host",       R.ImapServer);
+    props.put("mail.imap.ssl.enable", R.ImapSSL );
+    props.put("mail.imap.port"      , R.ImapPort);
+    //
+    props.put("mail.pop3.host",       R.Pop3Server);
+    props.put("mail.pop3.ssl.enable", R.Pop3SSL );
+    props.put("mail.pop3.port"      , R.Pop3Port);
+    // Настроить аутентификацию, получить session
+    //auth = new EmailAuthenticator();
+    //
+    Session session = Session.getDefaultInstance(props, null);
+    try {
+      // Получить store
+      store = session.getStore(); // "pop3"
+      // Подключение к почтовому серверу
+      store.connect(host, R.RecvEmailUser, R.RecvEmailPwd);
+      //store.connect();  
+    } catch(Exception e){
+      System.out.println("?Error-нет подключения к почтовому серверу " + e.getMessage());
+      return null;
+    }
+    return store;
+  }
+  
 } // end of class

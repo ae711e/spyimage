@@ -23,8 +23,8 @@ public class MailSend {
     private final String mail_from = R.Email;
     private final String smtp_server_adr = R.SmtpServer;
     private final int    smtp_server_port = Integer.parseInt(R.SmtpPort);
-    private final String smtp_server_user = R.EmailUser; // имя пользовтаеля для регистрации на почтовом сервере
-    private final String smtp_server_pwd = R.EmailPwd;   // пароль для почтового сервера
+    private final String smtp_server_user = R.SendEmailUser; // имя пользователя для регистрации на почтовом сервере
+    private final String smtp_server_pwd = R.SendEmailPwd;   // пароль для почтового сервера
     private final String addr_cc = R.SmtpMailCC;  // адрес копии
 
     public MailSend()

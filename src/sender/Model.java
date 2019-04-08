@@ -11,7 +11,6 @@ import ae.MyCrypto;
 import ae.R;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +46,7 @@ class Model
       }
     } else {
       // запросить публичный ключ у получателя
-      System.out.println("Получатель " + email + " неизвестен, запросить у него public key");
+      System.out.println("Получатель " + email + " неизвестен, запросим у него public key");
       String ks = " to email address: [ " + R.Email + " ]";
       subj = R.Subj_askpubkey + ks;
       mess = subj + ".\r\n S uvageniem, abonent S.P.Y. Image.\r\n";
@@ -58,13 +57,14 @@ class Model
   }
 
   /**
-   * Взять список получателей из таблицы keys
+   * Взять список получателей из таблицы keys,
+   * Все кроме меня.
    * @return массив строк
    */
   Collection<String> getKeysUsers()
   {
     // получим список имен из БД
-    ArrayList<String[]> ard = R.db.DlookupArray("SELECT usr FROM keys ORDER BY mykey,usr");
+    ArrayList<String[]> ard = R.db.DlookupArray("SELECT usr,mykey FROM keys WHERE (mykey) is null or mykey!=1 ORDER BY mykey,usr");
     ArrayList<String> list = new ArrayList<>();
     for(String[] r: ard) list.add(r[0]); // добавим имя в массив
     return  list;

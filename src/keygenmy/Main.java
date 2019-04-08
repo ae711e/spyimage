@@ -15,7 +15,7 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
     Parent root = FXMLLoader.load(getClass().getResource("keygenmy.fxml"));
-    primaryStage.setTitle("Crypto Keys Gen");
+    primaryStage.setTitle("My Keys Gen");
     primaryStage.setScene(new Scene(root, 700, 480));
     //primaryStage.getScene().getStylesheets().add("css/JMetroLightTheme.css");
     primaryStage.show();

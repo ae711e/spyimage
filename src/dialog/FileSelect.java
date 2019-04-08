@@ -23,27 +23,27 @@ public class FileSelect
 
   public FileSelect() {}
 
-  /**
-   * Конструктор класса выбора файла
-   * @param iDir  начальный каталог
-   */
-  public FileSelect(String iDir)
-  {
-    initialDir = iDir;
-  }
+  //public FileSelect(String iDir)  { initialDir = iDir; }
 
   /**
    * Выбор для чтения файла на диске
    * @param ae  событие кнопки (из нее получим сцену)
+   * @param extensionImageFile  признак задать расширения графических файлов
    * @return  имя выбранного файла
    */
-  public String openDialog(ActionEvent ae)
+  public String openDialog(ActionEvent ae, boolean extensionImageFile)
   {
     Stage stage = event2stage(ae);
     FileChooser fileChooser = new FileChooser();
     // @see https://o7planning.org/ru/11129/javafx-filechooser-and-directorychooser-tutorial#a3827915
     // Set Initial Directory
     fileChooser.setInitialDirectory(new File(initialDir));
+    if(extensionImageFile) {
+      fileChooser.getExtensionFilters().addAll(
+          new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
+          new FileChooser.ExtensionFilter("All Files", "*.*")
+      );
+    }
     File selectedFile = fileChooser.showOpenDialog(stage);
     if(selectedFile == null)
       return null;
@@ -55,15 +55,23 @@ public class FileSelect
   /**
    * Выбор для записи файла на диске
    * @param ae  событие кнопки (из нее получим сцену)
+   * @param extensionImageFile  строка расширения файла (jpg и т.д.)
    * @return  имя выбранного файла
    */
-  public String saveDialog(ActionEvent ae)
+  public String saveDialog(ActionEvent ae, String extensionImageFile)
   {
     Stage stage = event2stage(ae);
     FileChooser fileChooser = new FileChooser();
     // @see https://www.genuinecoder.com/save-files-javafx-filechooser/
     // Set Initial Directory
     fileChooser.setInitialDirectory(new File(initialDir));
+    if(extensionImageFile != null) {
+      String  n = "*." +extensionImageFile;
+      fileChooser.getExtensionFilters().addAll(
+          new FileChooser.ExtensionFilter("Image Files " + extensionImageFile, n),
+          new FileChooser.ExtensionFilter("All Files", "*.*")
+      );
+    }
     File selectedFile = fileChooser.showSaveDialog(stage);
     if(selectedFile == null)
       return null;
@@ -80,8 +88,7 @@ public class FileSelect
   private Stage   event2stage(ActionEvent ae)
   {
     Node source = (Node) ae.getSource();
-    Stage stage = (Stage) source.getScene().getWindow();
-    return stage;
+    return (Stage) source.getScene().getWindow();
   }
 
   /**
@@ -95,5 +102,5 @@ public class FileSelect
     return f.getParent();
   }
 
-} // end of file
+} // end of class
 
