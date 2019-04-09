@@ -15,7 +15,6 @@ import javax.mail.*;
 import javax.mail.internet.MimeUtility;
 import java.io.*;
 import java.nio.file.*;
-import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -24,7 +23,7 @@ import static ae.R.extractEmail;
 
 class Model
 {
-  private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm");
+  //private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm");
   private static final SimpleDateFormat sformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 
@@ -56,8 +55,6 @@ class Model
         fuel = m.getFrom()[0].toString(); // первый отправитель
         from = extractEmail(fuel);  // выделим чистый e-mail
         String subj = m.getSubject();
-        //System.out.println(j + ": " + from + " " + from + " " + subj);
-        //
         if(subj.contains(R.Subj_askpubkey)) {
           // письмо содержит запрос публичного ключа
           if(sendMyPubKey(from)) {
@@ -67,37 +64,32 @@ class Model
           }
           continue;
         }
-        //
+        // Письмо с публичным ключом отправителя
         if(subj.contains(R.Subj_publickey)) {
           // Письмо содержит публичный ключ отправителя
           Object content = m.getContent();
           if(content instanceof Multipart) {
             // содержимое письма Multipart, найдем вложение с публичным ключом
             Multipart mp = (Multipart) content;
-            for(int ip = 0, nmp = mp.getCount(); ip < nmp; ip++) {
-              BodyPart bp = mp.getBodyPart(ip); // часть сообщения
-              String fileAttach = bp.getFileName();
-              if (fileAttach != null) {
-                // файл вложения
-                String attach = MimeUtility.decodeText(fileAttach);  // раскодируем на всякий случай имя файла
-                if(attach.contains(R.PubKeyFileName)) {
-                  // имя файла похоже на имя публичного ключа
-                  // прочитаем публичный ключ сразу в строку и сохраним в БД
-                  // http://qaru.site/questions/226/readconvert-an-inputstream-to-a-string
-                  InputStream inputStream = bp.getInputStream();
-                  Scanner s = new Scanner(inputStream).useDelimiter("\\A");
-                  String result = s.hasNext() ? s.next() : "";
-                  String sql =
-                    "INSERT INTO keys(usr,publickey) VALUES('" + from + "','"+ result +"')";
-                  int a = R.db.ExecSql(sql);
-                  if(a == 1)
-                    System.out.println("Добавили публичный ключ для " + from);
-                }
+            BodyPart bp = getAttachedPart(mp); // часть сообщения c вложением
+            if(bp != null) {
+              // файл вложения
+              String attach = MimeUtility.decodeText(bp.getFileName());  // раскодируем на всякий случай имя файла
+              if(attach.contains(R.PubKeyFileName)) {
+                // имя файла похоже на имя зашифрованного публичного ключа
+                // прочитаем публичный ключ сразу в строку и сохраним в БД
+                String txt = R.InputStream2String(bp.getInputStream());
+                String sql = "INSERT INTO keys(usr,publickey) VALUES('" + from + "','"+ txt +"')";
+                int a = R.db.ExecSql(sql);
+                if(a == 1)
+                  System.out.println("Добавили публичный ключ для " + from);
+                // удалим письмо
+                m.setFlag(Flags.Flag.DELETED, true);
+              } else {
+                System.out.println("Письмо содержит неправильный файл публичного ключа от " + from);
               }
             }
           }
-          // удалим письмо
-          m.setFlag(Flags.Flag.DELETED, true);
           continue;
         }
       }
@@ -105,7 +97,7 @@ class Model
       // https://javaee.github.io/javamail/FAQ#gmaildelete
       folder.close(true);  // false
       //
-      // будем искать письма с изображениями
+      // будем искать письма с изображениями и заполнять коллекцию
       folder = store.getFolder("INBOX");
       folder.open(Folder.READ_ONLY); //  READ_ONLY
       messages = folder.getMessages();
@@ -124,29 +116,28 @@ class Model
             // письмо может содержать вложения
             // поищем их
             Multipart mp = (Multipart) content;
-            for(int ip = 0, nmp = mp.getCount(); ip < nmp; ip++) {
-              BodyPart bp = mp.getBodyPart(ip); // часть сообщения
-              String fileAttach = bp.getFileName();
-              if (fileAttach != null) {
-                // файл вложения
-                String attach = MimeUtility.decodeText(fileAttach);  // раскодируем на всякий случай имя файла
-                if(attach.contains(".dat")) {
-                  // имя файла с расширением dat могут содержать зашифрованное изображение
-                  // отметим это письмо
-                  Date  dt = m.getReceivedDate();
-                  if(dt == null) dt = new Date();
-                  String sdt = sformat.format(dt);
-                  String[] r = new String[4];
-                  r[0] = "" + m.getMessageNumber();
-                  r[1] = sdt;
-                  r[2] = from;
-                  r[3] = attach;
-                  strRes.add(r);
-                  break;
-                }
+            BodyPart  bp = getAttachedPart(mp);
+            if(bp != null) {
+              // файл вложения
+              String attach = MimeUtility.decodeText(bp.getFileName());  // раскодируем на всякий случай имя файла
+              if(attach.contains(R.CryptoExt)) {
+                // имя файла с крипто-расширением могут содержать зашифрованное изображение
+                // запомним это письмо
+                // @see https://javaee.github.io/javamail/docs/api/javax/mail/Message.html#getSentDate--
+                Date  dt = m.getSentDate();
+                if(dt == null) dt = m.getReceivedDate();  // как вариант
+                if(dt == null) dt = new Date(); // ну просто сейчас :-)
+                String sdt = sformat.format(dt);
+                String[] r = new String[4];
+                r[0] = "" + m.getMessageNumber();
+                r[1] = sdt;
+                r[2] = from;
+                r[3] = attach;
+                strRes.add(r);
               }
             }
           }
+          continue;
         }
       }
       folder.close(false);  // false
@@ -186,7 +177,7 @@ class Model
         return false; // ошибка записи
       // отправить публичный ключ
       subj = R.Subj_publickey + " " + R.Email;
-      mess = "Hello, dear friend! " + email + ".\rSend Your my public key. Sincerely, " + R.Email;
+      mess = "Hello, dear friend! " + email + ".\rI'm send Your my public key. Sincerely, " + R.Email;
       otv = msg.mailSend(email, subj, mess, foname);
       return (otv != null);
     }
@@ -262,7 +253,7 @@ class Model
             if (fileAttach != null) {
               // файл вложения
               String attach = MimeUtility.decodeText(fileAttach);  // раскодируем на всякий случай имя файла
-              if(attach.contains(".dat")) {
+              if(attach.contains(R.CryptoExt)) {
                 fdatname = writeAttachFile(bp);
                 break;
               }
@@ -306,7 +297,8 @@ class Model
       byte[] decry = crypto.decryptBigData(array);
       if(decry != null) {
         // запишем расшифрованный файл
-        String outFileName = fileName.replaceAll("\\.dat$", "");
+        String  ext = R.CryptoExt.replace(".", "\\.")+"$"; // сделаем рег.выр для поиска расширения
+        String outFileName = fileName.replaceAll(ext, "");
         Files.write(Paths.get(outFileName), decry);
         return outFileName;
       }
@@ -319,7 +311,7 @@ class Model
 //  private class EmailAuthenticator extends Authenticator {
 //    public PasswordAuthentication getPasswordAuthentication() {
 //      String username, password;
-//      username = R.RecvEmailUser; password = R.RecvEmailPwd;
+//      username = R.SmtpUser; password = R.SmtpPwd;
 //      return new PasswordAuthentication(username, password);
 //    }
 //  }
@@ -334,31 +326,26 @@ class Model
     // Свойства установки
     Properties props = System.getProperties();
     //
-    props.put("mail.debug", "false"  );
-    String  host;
-    if(R.ServerProtocol.contains("imap"))
-      host = R.ImapServer;
-    else
-      host = R.Pop3Server;
-    //
-    props.put("mail.store.protocol" , R.ServerProtocol);
-
-    props.put("mail.imap.host",       R.ImapServer);
-    props.put("mail.imap.ssl.enable", R.ImapSSL );
-    props.put("mail.imap.port"      , R.ImapPort);
-    //
-    props.put("mail.pop3.host",       R.Pop3Server);
-    props.put("mail.pop3.ssl.enable", R.Pop3SSL );
-    props.put("mail.pop3.port"      , R.Pop3Port);
+    props.put("mail.debug", "false");
+    String  host  = R.PostServer;
+    String  proto = R.PostProtocol;
+    // если протокол не то, не се, то сделаем imap
+    if(proto.compareTo("imap")!=0 && proto.compareTo("pop3")!=0) {
+      R.PostProtocol = proto = "imap";
+    }
+    props.put("mail.store.protocol" , proto);
+    props.put("mail." + proto + ".host",       R.PostServer);
+    props.put("mail." + proto + ".port"      , R.PostPort);
+    props.put("mail." + proto + ".ssl.enable", R.PostSSL);
     // Настроить аутентификацию, получить session
     //auth = new EmailAuthenticator();
     //
     Session session = Session.getDefaultInstance(props, null);
     try {
       // Получить store
-      store = session.getStore(); // "pop3"
+      store = session.getStore(proto); // "pop3"
       // Подключение к почтовому серверу
-      store.connect(host, R.RecvEmailUser, R.RecvEmailPwd);
+      store.connect(host, R.PostUser, R.PostPwd);
       //store.connect();  
     } catch(Exception e){
       System.out.println("?Error-нет подключения к почтовому серверу " + e.getMessage());
@@ -366,5 +353,27 @@ class Model
     }
     return store;
   }
-  
+
+  /**
+   * Получить часть с файлом-вложением из составного письма.
+   * Если вложений несколько,то возвращается часть с вложением.
+   * @param mp  тело письма
+   * @return часть с файлом-вложением или null
+   */
+  private BodyPart  getAttachedPart(Multipart mp)
+  {
+    try {
+      int n = mp.getCount();
+      for (int i = 0; i < n; i++) {
+        BodyPart bp = mp.getBodyPart(i); // часть сообщения
+        String fileAttach = bp.getFileName();
+        if (fileAttach != null)
+          return bp;
+      }
+    } catch (Exception e) {
+      System.err.println("?-Error-getAttachedPart(): " + e.getMessage());
+    }
+    return null; // нет частей с вложением
+  }
+
 } // end of class

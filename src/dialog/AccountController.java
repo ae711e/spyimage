@@ -12,38 +12,52 @@ package dialog;
 import ae.R;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-public class AccountController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class AccountController implements Initializable {
 
   @FXML
   TextField txt_Email;       // электронный адрес почты
   @FXML
-  TextField txt_EmailUser;   // имя пользователя почтового сервера
+  TextField txt_SmtpUser;   // имя пользователя почтового сервера
   @FXML
-  TextField txt_EmailPwd;    // пароль пользователя почтового сервера
+  TextField txt_SmtpPwd;    // пароль пользователя почтового сервера
 
   @FXML
   TextField txt_SmtpServer;       // адрес почтового сервера
   @FXML
   TextField txt_SmtpPort;   // порт почтового сервера для отправки
+  @FXML
+  TextField txt_SmtpSSL;   // SSL почтового сервера
 
   @FXML
-  TextField txt_ImapServer;       // адрес почтового сервера для приема
+  TextField txt_PostUser;       // пользователь приема
   @FXML
-  TextField txt_ImapPort;   // порт почтового сервера
-  @FXML
-  TextField txt_ImapSSL;   // протокол почтового сервера
+  TextField txt_PostPwd;   // пароль приема
 
   @FXML
-  TextField txt_Pop3Server;       // адрес почтового сервера для приема
+  TextField txt_PostServer;       // адрес почтового сервера для приема
   @FXML
-  TextField txt_Pop3Port;   // порт почтового сервера
+  TextField txt_PostPort;   // порт почтового сервера
   @FXML
-  TextField txt_Pop3SSL;   // протокол почтового сервера
+  TextField txt_PostSSL;   // SSL почтового сервера
+
+  @FXML
+  ComboBox<String>  cb_proto;
+
+  @FXML
+  ComboBox<String> cb_SmtpSSL;
+
+  @FXML
+  ComboBox<String> cb_PostSSL;
 
 
   @FXML
@@ -53,44 +67,68 @@ public class AccountController {
   Button        btn_Cancel;
 
   /**
+   * Первоначальный запуск
+   * @param location  расположение
+   * @param resources ресурс
+   */
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    // заполним комбо-бокс протоколами
+    cb_proto.getItems().add("imap");    cb_proto.getItems().add("pop3");
+    cb_SmtpSSL.getItems().add("true");  cb_SmtpSSL.getItems().add("false");
+    cb_PostSSL.getItems().add("true");  cb_PostSSL.getItems().add("false");
+  }
+
+  /**
    * Возьмем данные учетной записи
    */
   public void getAccount() {
     R.getAccount();   // заполним данные учетной записи
     txt_Email.setText(R.Email);       // электронный адрес почты
-    txt_EmailUser.setText(R.RecvEmailUser);   // имя пользователя почтового сервера
-    txt_EmailPwd.setText(R.RecvEmailPwd);    // пароль пользователя почтового сервера
 
-    txt_SmtpServer.setText(R.SmtpServer);       // адрес почтового сервера
-    txt_SmtpPort.setText(R.SmtpPort);   // порт почтового сервера для отправки
+    txt_SmtpUser.setText(R.SmtpUser);    // имя пользователя отправки
+    txt_SmtpPwd.setText(R.SmtpPwd);       // пароль пользователя отправки
+    txt_SmtpServer.setText(R.SmtpServer); // адрес почтового сервера для отправки
+    txt_SmtpPort.setText(R.SmtpPort);     // порт почтового сервера для отправки
+    //txt_SmtpSSL.setText(R.SmtpSSL);       // протокол SSL почтового сервера отправки
+    cb_SmtpSSL.getSelectionModel().select(R.SmtpSSL); // протокол SSL почтового сервера отправки
 
-    txt_ImapServer.setText(R.ImapServer); // адрес почтового сервера для приема
-    txt_ImapPort.setText(R.ImapPort);     // порт почтового сервера
-    txt_ImapSSL.setText(R.ImapSSL);       // протокол SSL почтового сервера
+    // комбобокс с протоколом приемного сервера
+    cb_proto.getSelectionModel().select(R.PostProtocol);
+    //txt_PostProtocol.setText(R.PostProtocol); // протокол приема сообщение
 
-    txt_Pop3Server.setText(R.Pop3Server); // адрес почтового сервера для приема
-    txt_Pop3Port.setText(R.Pop3Port);     // порт почтового сервера
-    txt_Pop3SSL.setText(R.Pop3SSL);       // протокол SSL почтового сервера
+    txt_PostUser.setText(R.PostUser);    // пользователь
+    txt_PostPwd.setText(R.PostPwd);       // пароль
+    txt_PostServer.setText(R.PostServer); // адрес почтового сервера для приема
+    txt_PostPort.setText(R.PostPort);     // порт почтового сервера
+    //txt_PostSSL.setText(R.PostSSL);       // протокол SSL почтового сервера
+    cb_PostSSL.getSelectionModel().select(R.PostSSL); // протокол SSL почтового сервера отправки
+    //
 
-    //txt_name.setText(account.getName());
-    //psw_pass.setText(account.getPass());
   }
 
   /**
    * Запишем данные учетной записи после редактирования
    */
   void putAccount() {
-    R.Email = txt_Email.getText();            // электронный адрес почты
-    R.RecvEmailUser = txt_EmailUser.getText();  // имя пользователя почтового сервера
-    R.RecvEmailPwd = txt_EmailPwd.getText();   // пароль пользователя почтового сервера
-    R.SmtpServer  = txt_SmtpServer.getText(); // адрес почтового сервера
-    R.SmtpPort    = txt_SmtpPort.getText();   // порт почтового сервера для отправки
-    R.ImapServer  = txt_ImapServer.getText(); // адрес почтового сервера для приема
-    R.ImapPort    = txt_ImapPort.getText();   // порт почтового сервера
-    R.ImapSSL     = txt_ImapSSL.getText();    // протокол SSL почтового сервера
-    R.Pop3Server  = txt_Pop3Server.getText(); // адрес почтового сервера для приема
-    R.Pop3Port    = txt_Pop3Port.getText();   // порт почтового сервера
-    R.Pop3SSL     = txt_Pop3SSL.getText();    // протокол SSL почтового сервера
+    //
+    R.Email = txt_Email.getText();       // электронный адрес почты
+
+    R.SmtpUser = txt_SmtpUser.getText();    // имя пользователя отправки
+    R.SmtpPwd = txt_SmtpPwd.getText();       // пароль пользователя отправки
+    R.SmtpServer = txt_SmtpServer.getText(); // адрес почтового сервера для отправки
+    R.SmtpPort = txt_SmtpPort.getText();     // порт почтового сервера для отправки
+    //R.SmtpSSL = txt_SmtpSSL.getText();       // протокол SSL почтового сервера отправки
+    R.SmtpSSL = cb_SmtpSSL.getValue();       // протокол SSL почтового сервера отправки
+
+    R.PostProtocol = cb_proto.getValue();  // txt_PostProtocol.getText();       // протокол приема сообщение
+
+    R.PostUser = txt_PostUser.getText();    // пользователь
+    R.PostPwd = txt_PostPwd.getText();       // пароль
+    R.PostServer = txt_PostServer.getText(); // адрес почтового сервера для приема
+    R.PostPort = txt_PostPort.getText();     // порт почтового сервера
+    //R.PostSSL = txt_PostSSL.getText();       // протокол SSL почтового сервера
+    R.PostSSL = cb_PostSSL.getValue();       // протокол SSL почтового
     //
     R.putAccount();   // заполним данные учетной записи в БД
   }

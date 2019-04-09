@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -20,45 +21,46 @@
    <children>
       <Label text="Настройка почтового аккаунта" textFill="#2620dd" GridPane.columnSpan="2147483647">
          <font>
-            <Font name="System Bold" size="15.0" />
+            <Font name="Arial Bold" size="15.0" />
          </font></Label>
       <Label text="электронный адрес почты" GridPane.rowIndex="1">
          <font>
-            <Font name="System Bold" size="12.0" />
+            <Font name="System Bold" size="14.0" />
          </font></Label>
       <TextField fx:id="txt_Email" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
-      <Label text="аутентификации для приема" GridPane.rowIndex="2" />
-      <TextField fx:id="txt_EmailUser" promptText="имя для приема" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <Label text="аутентификации для отправки" GridPane.rowIndex="3" />
-      <TextField fx:id="txt_EmailPwd" prefWidth="100.0" promptText="пароль для приема" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="2" />
 
-      <Label text="SMTP сервер для отправки" GridPane.rowIndex="4" />
-      <TextField fx:id="txt_SmtpServer" promptText="адрес сервера" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <Label text="аутентификации для отправки" GridPane.rowIndex="2" />
+      <TextField fx:id="txt_SmtpUser" promptText="имя для отправки" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <TextField fx:id="txt_SmtpPwd" prefWidth="100.0" promptText="пароль для передачи" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+
+      <Label text="SMTP адр.|порт|SSL" GridPane.rowIndex="3" />
+      <TextField fx:id="txt_SmtpServer" promptText="адрес сервера" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <TextField fx:id="txt_SmtpPort" prefWidth="80.0" promptText="порт сервера" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+      <ComboBox fx:id="cb_SmtpSSL" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+
       <Label text="протокол приема" GridPane.rowIndex="5" />
-      <TextField fx:id="txt_SmtpPort" prefWidth="100.0" promptText="порт сервера" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+      <ComboBox fx:id="cb_proto"  GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-      <Label text="IMAP сервер для приема" GridPane.rowIndex="6" />
-      <TextField fx:id="txt_ImapServer" promptText="адрес сервера" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-      <Label text="POP3 сервер для приема" GridPane.rowIndex="7" />
-      <TextField fx:id="txt_ImapPort" prefWidth="100.0" promptText="порт сервера" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-      <TextField fx:id="txt_ImapSSL" prefWidth="60.0" promptText="ssl imap" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+      <Label text="аутентификации для приема" GridPane.rowIndex="6" />
+      <TextField fx:id="txt_PostUser" promptText="имя для приема" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+      <TextField fx:id="txt_PostPwd" prefWidth="100.0" promptText="пароль для приема" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="6" />
 
-      <TextField fx:id="txt_Pop3Server" promptText="адрес сервера" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-      <TextField fx:id="txt_Pop3Port" prefWidth="100.0" promptText="порт сервера" GridPane.columnIndex="2" GridPane.rowIndex="7" />
-      <TextField fx:id="txt_Pop3SSL" prefWidth="60.0" promptText="ssl pop3" GridPane.columnIndex="3" GridPane.rowIndex="7" />
+      <Label text="Прием адр.|порт|SSL" GridPane.rowIndex="7" />
+      <TextField fx:id="txt_PostServer" promptText="адрес сервера" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+      <TextField fx:id="txt_PostPort" prefWidth="80.0" promptText="порт сервера" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+      <ComboBox fx:id="cb_PostSSL" GridPane.columnIndex="3" GridPane.rowIndex="7" />
 
-      <HBox minHeight="20.0" minWidth="100.0" spacing="20.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="12">
+      <HBox minHeight="20.0" minWidth="100.0" spacing="40.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="8">
          <children>
             <Button fx:id="btn_Ok" defaultButton="true" mnemonicParsing="false" onAction="#click_btn_Ok" text="OK" />
             <Button fx:id="btn_Cancel" alignment="BASELINE_RIGHT" cancelButton="true" contentDisplay="CENTER" mnemonicParsing="false" onAction="#click_Btn_Cancel" text="Cancel" textAlignment="CENTER" />
          </children>
          <padding>
-            <Insets bottom="5.0" top="10.0" />
+            <Insets top="10.0" />
          </padding>
       </HBox>
-      <TextField promptText="имя для отправки" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-      <TextField prefWidth="100.0" promptText="пароль для отправки" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="3" />
-      <TextField fx:id="txt_ServerProtocol" promptText="imap или pop3" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+
    </children>
    <columnConstraints>
       <ColumnConstraints />
@@ -85,6 +87,6 @@
       <Insets />
    </opaqueInsets>
    <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      <Insets left="10.0" right="10.0" top="5.0" />
    </padding>
 </GridPane>

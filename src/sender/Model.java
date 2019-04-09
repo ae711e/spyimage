@@ -86,7 +86,7 @@ class Model
       byte[] crypt = crypto.encryptBigData(array);
       if(crypt != null) {
         // запишем зашифрованный файл
-        String outFileName = fileName + ".dat";
+        String outFileName = fileName + R.CryptoExt;
         Files.write(Paths.get(outFileName), crypt);
         return outFileName;
       }

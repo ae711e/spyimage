@@ -9,6 +9,7 @@ package ae;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,6 +40,8 @@ public class R {
   final static public String  Subj_publickey = "(spyimage)_Please_get_my_public_key";
   // имя файла с публичным ключом
   final static public String  PubKeyFileName = "publickey.key";
+  // расширение зашифрованных файлов
+  final static public String  CryptoExt = ".spydat";
 
   // final static String sep = System.getProperty("file.separator"); // разделитель имени каталогов
   static String ProxyServer = _r.proxyserv;  // proxy сервер
@@ -52,20 +55,19 @@ public class R {
   static String SmtpMailCC     = null;              // адрес получателя копии почты
 
   public static String Email      = _r.email;       // адрес почты
-  public static String RecvEmailUser = _r.emailuser;   // имя пользователя получения от почтового сервера
-  public static String RecvEmailPwd = _r.emailpwd;    // пароль пользователя почтового сервера
-  public static String SendEmailUser  = null; // _r.emailuser;   // имя пользователя посылки почтового сервера
-  public static String SendEmailPwd   = null; //_r.emailpwd;    // пароль пользователя почтового сервера
+  //
+  public static String SmtpUser   = _r.emailuser;   // имя пользователя получения от почтового сервера
+  public static String SmtpPwd    = _r.emailpwd;    // пароль пользователя почтового сервера
   public static String SmtpServer = _r.smtpserver;  // адрес почтового сервера
   public static String SmtpPort   = _r.smtpport;    // (25) порт почтового сервера
-
-  public static String ServerProtocol = "pop3"; // imap pop3 протокол сервера
-  public static String ImapServer = _r.imapserver;  // адрес почтового сервера
-  public static String ImapPort   = _r.imapport;    // порт
-  public static String ImapSSL    = "true";         // протокол SSL
-  public static String Pop3Server = _r.pop3server;  // адрес почтового сервера
-  public static String Pop3Port   = _r.pop3port;    // порт
-  public static String Pop3SSL    = "false";        // протокол SSL
+  public static String SmtpSSL    = "false";         // протокол SSL SMTP сервера
+  //
+  public static String PostProtocol = "pop3";       // imap pop3 протокол сервера
+  public static String PostUser   = _r.emailuser;   // _r.emailuser;   // имя пользователя посылки почтового сервера
+  public static String PostPwd    = _r.emailpwd;    //_r.emailpwd;    // пароль пользователя почтового сервера
+  public static String PostServer = _r.pop3server;  // адрес почтового сервера
+  public static String PostPort   = _r.pop3port;    // порт
+  public static String PostSSL    = "false";         // протокол SSL
 
   /**
    * Проверить наличие базы данных и создать нужные таблицы
@@ -75,21 +77,19 @@ public class R {
     final String create_tables =
         "CREATE TABLE _Info(key VARCHAR(32)  PRIMARY KEY, val text);" +
         "CREATE TABLE keys (usr VARCHAR(255) PRIMARY KEY, publickey TEXT, privatekey TEXT, mykey INT unique, wdat DATETIME DEFAULT (DATETIME('now', 'localtime')));" +
-        "INSERT INTO _Info(key) VALUES('Email');" +
-        "INSERT INTO _Info(key) VALUES('RecvEmailUser');" +
-        "INSERT INTO _Info(key) VALUES('RecvEmailPwd');" +
-        "INSERT INTO _Info(key) VALUES('SendEmailUser');" +
-        "INSERT INTO _Info(key) VALUES('SendEmailPwd');" +
-        "INSERT INTO _Info(key) VALUES('ServerProtocol');" +
-        "INSERT INTO _Info(key) VALUES('SmtpServer');" +
-        "INSERT INTO _Info(key) VALUES('SmtpPort');" +
-        "INSERT INTO _Info(key) VALUES('ImapServer');" +
-        "INSERT INTO _Info(key) VALUES('ImapPort');" +
-        "INSERT INTO _Info(key) VALUES('ImapSSL');" +
-        "INSERT INTO _Info(key) VALUES('Pop3Server');" +
-        "INSERT INTO _Info(key) VALUES('Pop3Port');" +
-        "INSERT INTO _Info(key) VALUES('Pop3SSL');" +
-        "";
+            "INSERT INTO _Info(key) VALUES('Email');" +
+            "INSERT INTO _Info(key) VALUES('SmtpUser');" +
+            "INSERT INTO _Info(key) VALUES('SmtpPwd');" +
+            "INSERT INTO _Info(key) VALUES('SmtpServer');" +
+            "INSERT INTO _Info(key) VALUES('SmtpPort');" +
+            "INSERT INTO _Info(key) VALUES('SmtpSSL');" +
+            "INSERT INTO _Info(key) VALUES('PostProtocol');" +
+            "INSERT INTO _Info(key) VALUES('PostUser');" +
+            "INSERT INTO _Info(key) VALUES('PostPwd');" +
+            "INSERT INTO _Info(key) VALUES('PostServer');" +
+            "INSERT INTO _Info(key) VALUES('PostPort');" +
+            "INSERT INTO _Info(key) VALUES('PostSSL');" +
+            "";
     if(db == null) {
       db = new DatabaseSqlite(WorkDB);
       //
@@ -129,42 +129,36 @@ public class R {
 
   static public void getAccount()
   {
-    // прочитать из БД значения часов выдержки
-    Email       = getInfo(db, "Email",      Email);       // адрес отправителя
-    RecvEmailUser  = getInfo(db, "RecvEmailUser", RecvEmailUser);   // имя пользователя для приема писем
-    RecvEmailPwd   = getInfo(db, "RecvEmailPwd",  RecvEmailPwd);    // пароль пользователя для приема
-    SendEmailUser  = getInfo(db, "SendEmailUser", SendEmailUser);   // имя пользователя для передачи писем
-    SendEmailPwd   = getInfo(db, "SendEmailPwd",  SendEmailPwd);    // пароль пользователя для передачи
-    ServerProtocol = getInfo(db, "ServerProtocol", ServerProtocol);  // протокол приема писем с почтового сервера
+    // прочитать из БД значения аккаунта
+    Email       = getInfo(db, "Email", Email);            // адрес отправителя
+    SmtpUser    = getInfo(db, "SmtpUser", SmtpUser);    // имя пользователя для передачи писем
+    SmtpPwd     = getInfo(db, "SmtpPwd", SmtpPwd);        // пароль пользователя для передачи
     SmtpServer  = getInfo(db, "SmtpServer", SmtpServer);  // адрес SMTP почтового сервера
-    SmtpPort    = getInfo(db, "SmtpPort",   SmtpPort);    // порт smpt сервера
-    ImapServer  = getInfo(db, "ImapServer", ImapServer);  // адрес IMAP почтового сервера
-    ImapPort    = getInfo(db, "ImapPort",   ImapPort);    // порт IMAP сервера
-    ImapSSL     = getInfo(db, "ImapSSL",    ImapSSL);     // протокол SSL IMAP сервера
-    Pop3Server  = getInfo(db, "Pop3Server", Pop3Server);  // адрес POP3 почтового сервера
-    Pop3Port    = getInfo(db, "Pop3Port",   Pop3Port);    // порт POP3 сервера
-    Pop3SSL     = getInfo(db, "Pop3SSL",    Pop3SSL);     // протокол SSL POP3 сервера
-
+    SmtpPort    = getInfo(db, "SmtpPort",   SmtpPort);    // порт SMTP сервера
+    SmtpSSL     = getInfo(db, "SmtpSSL", SmtpSSL);        // протокол SSL SMTP сервера
+    PostProtocol = getInfo(db, "PostProtocol", PostProtocol); // протокол приема писем из почтового сервера
+    PostUser = getInfo(db, "PostUser", PostUser);    // имя пользователя для приема писем
+    PostPwd     = getInfo(db, "PostPwd", PostPwd);        // пароль пользователя для приема
+    PostServer  = getInfo(db, "PostServer", PostServer);  // адрес IMAP/POP3 почтового сервера
+    PostPort    = getInfo(db, "PostPort", PostPort);      // порт IMAP/POP3 сервера
+    PostSSL     = getInfo(db, "PostSSL", PostSSL);        // протокол SSL IMAP/POP3 сервера
   }
 
   static public void putAccount()
   {
     // положить в БД значения аккаунта
-    putInfo(db, "Email",      Email);       // адрес отправителя
-    putInfo(db, "RecvEmailUser",  RecvEmailUser);   // имя пользователя для регистрации на сервере
-    putInfo(db, "RecvEmailPwd",   RecvEmailPwd);    // пароль пользователя для регистрации на сервере
-    putInfo(db, "SendEmailUser",  SendEmailUser);   // имя пользователя для передачи писем
-    putInfo(db, "SendEmailPwd",   SendEmailPwd);    // пароль пользователя для передачи
-    putInfo(db, "ServerProtocol", ServerProtocol);  // протокол приема писем с почтового сервера
+    putInfo(db, "Email", Email);            // адрес отправителя
+    putInfo(db, "SmtpUser", SmtpUser);    // имя пользователя для передачи писем
+    putInfo(db, "SmtpPwd", SmtpPwd);        // пароль пользователя для передачи
     putInfo(db, "SmtpServer", SmtpServer);  // адрес SMTP почтового сервера
-    putInfo(db, "SmtpPort",   SmtpPort);    // порт smpt сервера
-    putInfo(db, "ImapServer", ImapServer);  // адрес IMAP почтового сервера
-    putInfo(db, "ImapPort",   ImapPort);    // порт IMAP сервера
-    putInfo(db, "ImapSSL",    ImapSSL);     // протокол SSL IMAP сервера
-    putInfo(db, "Pop3Server", Pop3Server);  // адрес POP3 почтового сервера
-    putInfo(db, "Pop3Port",   Pop3Port);    // порт POP3 сервера
-    putInfo(db, "Pop3SSL",    Pop3SSL);     // протокол SSL POP3 сервера
-    //
+    putInfo(db, "SmtpPort",   SmtpPort);    // порт SMTP сервера
+    putInfo(db, "SmtpSSL", SmtpSSL);        // протокол SSL SMTP сервера
+    putInfo(db, "PostProtocol", PostProtocol); // протокол приема писем из почтового сервера
+    putInfo(db, "PostUser", PostUser);    // имя пользователя для приема писем
+    putInfo(db, "PostPwd", PostPwd);        // пароль пользователя для приема
+    putInfo(db, "PostServer", PostServer);  // адрес IMAP/POP3 почтового сервера
+    putInfo(db, "PostPort", PostPort);      // порт IMAP/POP3 сервера
+    putInfo(db, "PostSSL", PostSSL);        // протокол SSL IMAP/POP3 сервера
   }
 
   /**
@@ -316,7 +310,7 @@ public class R {
   private static String getInfo(Database db, String keyName, String defaultValue)
   {
       String val = db.Dlookup("SELECT val FROM _Info WHERE key='" + keyName + "'");
-      if(val == null || val.length() < 1) {
+      if(val == null /*|| val.length() < 1*/) {
           return defaultValue;
       }
       return val;
@@ -344,7 +338,7 @@ public class R {
   private static void putInfo(Database db, String keyName, String Value)
   {
     String val;
-    if(Value == null || Value.length() < 1)
+    if(Value == null /*|| Value.length() < 1*/)
       val = "null";
     else
       val = db.s2s(Value);
@@ -389,6 +383,19 @@ public class R {
 */
 
   /////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Скопировать входной поток в строку
+   * @param inputStream входной поток
+   * @return выходная строка
+   */
+  public static String InputStream2String(InputStream inputStream)
+  {
+    // http://qaru.site/questions/226/readconvert-an-inputstream-to-a-string
+    Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+    String txt = s.hasNext() ? s.next() : "";
+    return txt;
+  }
 
   /**
    * Выделить e-mail из входной строки

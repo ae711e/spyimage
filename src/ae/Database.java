@@ -163,7 +163,7 @@ public class Database
      */
     public String s2s(String str)
     {
-      if(null == str || str.length()<1) {
+      if(null == str /*|| str.length()<1*/) {
         return "null";
       }
       String s = str.replace("'", "`");
