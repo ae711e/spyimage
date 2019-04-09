@@ -10,6 +10,7 @@ import ae.MailSend;
 import ae.MyCrypto;
 import ae.R;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ class Model
    * Отправить по адресу файл вложения
    * @param email       адрес получателя
    * @param fileAppend  файл вложения
-   * @return
+   * @return признак успеха отправки почты
    */
   boolean  sendMailTo(String email, String fileAppend)
   {
@@ -86,7 +87,8 @@ class Model
       byte[] crypt = crypto.encryptBigData(array);
       if(crypt != null) {
         // запишем зашифрованный файл
-        String outFileName = fileName + R.CryptoExt;
+        File f  = new File(fileName);
+        String outFileName = R.TmpDir + f.getName() + R.CryptoExt;
         Files.write(Paths.get(outFileName), crypt);
         return outFileName;
       }
