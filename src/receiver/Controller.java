@@ -149,6 +149,8 @@ public class Controller extends OutputStream implements Initializable
         File file = new File(fimg);
         String uri = file.toURI().toString();
         f_image.setImage(new Image(uri));
+      } else {
+        System.out.println("Ошибка расшифровки входного файла");
       }
     }
 

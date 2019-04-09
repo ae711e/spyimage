@@ -25,7 +25,7 @@ public class R {
   final static String Ver = "1.0"; // номер версии
 
   // рабочая БД
-  static String WorkDB = "spyimage.db";   // CentOs Linux (в Windows будет D:\var\Gmir\*.db)
+  static final String WorkDB = "spyimage.db";   // CentOs Linux (в Windows будет D:\var\Gmir\*.db)
   static public Database  db;   // база данных проекта
   // выдать временный каталог (завершается обратным слэшем)
   public final static String TmpDir = System.getProperty("java.io.tmpdir");
@@ -56,18 +56,18 @@ public class R {
 
   public static String Email      = _r.email;       // адрес почты
   //
-  public static String SmtpUser   = _r.emailuser;   // имя пользователя получения от почтового сервера
-  public static String SmtpPwd    = _r.emailpwd;    // пароль пользователя почтового сервера
+  public static String SmtpUser   = _r.smtpuser;   // имя пользователя получения от почтового сервера
+  public static String SmtpPwd    = _r.smtppwd;    // пароль пользователя почтового сервера
   public static String SmtpServer = _r.smtpserver;  // адрес почтового сервера
   public static String SmtpPort   = _r.smtpport;    // (25) порт почтового сервера
-  public static String SmtpSSL    = "false";         // протокол SSL SMTP сервера
+  public static String SmtpSSL    = _r.smtpssl;     // протокол SSL SMTP сервера
   //
-  public static String PostProtocol = "pop3";       // imap pop3 протокол сервера
-  public static String PostUser   = _r.emailuser;   // _r.emailuser;   // имя пользователя посылки почтового сервера
-  public static String PostPwd    = _r.emailpwd;    //_r.emailpwd;    // пароль пользователя почтового сервера
-  public static String PostServer = _r.pop3server;  // адрес почтового сервера
-  public static String PostPort   = _r.pop3port;    // порт
-  public static String PostSSL    = "false";         // протокол SSL
+  public static String PostProtocol = _r.protocol;  // imap pop3 протокол сервера
+  public static String PostUser   = _r.postuser;    // имя пользователя посылки почтового сервера
+  public static String PostPwd    = _r.postpwd;     // пароль пользователя почтового сервера
+  public static String PostServer = _r.postserver;  // адрес почтового сервера
+  public static String PostPort   = _r.postport;    // порт
+  public static String PostSSL    = _r.postssl;     // протокол SSL
 
   /**
    * Проверить наличие базы данных и создать нужные таблицы
@@ -131,13 +131,13 @@ public class R {
   {
     // прочитать из БД значения аккаунта
     Email       = getInfo(db, "Email", Email);            // адрес отправителя
-    SmtpUser    = getInfo(db, "SmtpUser", SmtpUser);    // имя пользователя для передачи писем
+    SmtpUser    = getInfo(db, "SmtpUser", SmtpUser);      // имя пользователя для передачи писем
     SmtpPwd     = getInfo(db, "SmtpPwd", SmtpPwd);        // пароль пользователя для передачи
     SmtpServer  = getInfo(db, "SmtpServer", SmtpServer);  // адрес SMTP почтового сервера
     SmtpPort    = getInfo(db, "SmtpPort",   SmtpPort);    // порт SMTP сервера
     SmtpSSL     = getInfo(db, "SmtpSSL", SmtpSSL);        // протокол SSL SMTP сервера
     PostProtocol = getInfo(db, "PostProtocol", PostProtocol); // протокол приема писем из почтового сервера
-    PostUser = getInfo(db, "PostUser", PostUser);    // имя пользователя для приема писем
+    PostUser    = getInfo(db, "PostUser", PostUser);      // имя пользователя для приема писем
     PostPwd     = getInfo(db, "PostPwd", PostPwd);        // пароль пользователя для приема
     PostServer  = getInfo(db, "PostServer", PostServer);  // адрес IMAP/POP3 почтового сервера
     PostPort    = getInfo(db, "PostPort", PostPort);      // порт IMAP/POP3 сервера
@@ -148,13 +148,13 @@ public class R {
   {
     // положить в БД значения аккаунта
     putInfo(db, "Email", Email);            // адрес отправителя
-    putInfo(db, "SmtpUser", SmtpUser);    // имя пользователя для передачи писем
+    putInfo(db, "SmtpUser", SmtpUser);      // имя пользователя для передачи писем
     putInfo(db, "SmtpPwd", SmtpPwd);        // пароль пользователя для передачи
     putInfo(db, "SmtpServer", SmtpServer);  // адрес SMTP почтового сервера
     putInfo(db, "SmtpPort",   SmtpPort);    // порт SMTP сервера
     putInfo(db, "SmtpSSL", SmtpSSL);        // протокол SSL SMTP сервера
     putInfo(db, "PostProtocol", PostProtocol); // протокол приема писем из почтового сервера
-    putInfo(db, "PostUser", PostUser);    // имя пользователя для приема писем
+    putInfo(db, "PostUser", PostUser);      // имя пользователя для приема писем
     putInfo(db, "PostPwd", PostPwd);        // пароль пользователя для приема
     putInfo(db, "PostServer", PostServer);  // адрес IMAP/POP3 почтового сервера
     putInfo(db, "PostPort", PostPort);      // порт IMAP/POP3 сервера
