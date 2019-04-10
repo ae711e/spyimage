@@ -404,6 +404,8 @@ public class R {
    */
   public static String  extractEmail(String inputStr)
   {
+    // регулярное выражение для выделения эл. адреса
+    Pattern email_pattern = Pattern.compile("[a-z0-9_.\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,4}",Pattern.CASE_INSENSITIVE);
     Matcher mat = email_pattern.matcher(inputStr);
     if(mat.find()) {
       String m = mat.group();
@@ -411,8 +413,6 @@ public class R {
     }
     return null;
   }
-  // регулярное выражение для выделения эл. адреса
-  private static Pattern email_pattern = Pattern.compile("[a-z0-9_.\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,4}",Pattern.CASE_INSENSITIVE);
 
   /**
    * Выдать имя файла
@@ -433,7 +433,8 @@ public class R {
    */
   public static String getFileExtension(String fullname)
   {
-    Matcher mt = Pattern.compile("\\.\\w+$", Pattern.CASE_INSENSITIVE).matcher(fullname);
+    Pattern file_extension = Pattern.compile("\\.\\w{1,4}$", Pattern.CASE_INSENSITIVE);
+    Matcher mt = file_extension.matcher(fullname);
     String fext = mt.find() ? mt.group() : ""; // расширение
     return fext;
   }
