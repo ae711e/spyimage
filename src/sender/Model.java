@@ -9,12 +9,13 @@ package sender;
 import ae.MailSend;
 import ae.MyCrypto;
 import ae.R;
+import static ae.R.*;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+
 
 class Model
 {
@@ -35,10 +36,12 @@ class Model
     String pk  = R.db.Dlookup("SELECT publickey FROM keys WHERE usr=" + usr);
     // есть публичный ключ?
     if(pk != null && pk.length() > 1) {
+      // Зашифруем файл во временный каталог
       String fout = encryptFile(fileAppend, pk);
       if(fout != null) {
         // отправить зашифрованный документ
-        subj = R.Subj_imagedoc + " " + email;
+        String  fn = getFileName(fileAppend);
+        subj = R.Subj_imagedoc + " " + email + " <" + fn + ">";
         mess = "Hello, dear friend! " + email + ".\r" + subj;
         app = fout;
       } else {
@@ -86,9 +89,8 @@ class Model
       byte[] array = Files.readAllBytes(Paths.get(fileName));
       byte[] crypt = crypto.encryptBigData(array);
       if(crypt != null) {
-        // запишем зашифрованный файл
-        File f  = new File(fileName);
-        String outFileName = R.TmpDir + f.getName() + R.CryptoExt;
+        // запишем зашифрованный файл во временный файл
+        String outFileName = tempFileName(fileName);
         Files.write(Paths.get(outFileName), crypt);
         return outFileName;
       }
@@ -97,5 +99,31 @@ class Model
     }
     return null;
   }
+
+  /**
+   * Получить имя временного файла (для зашифрованного файла)
+   * @param finp  входное имя файла
+   * @return  имя файла во временном каталоге
+   */
+  private String tempFileName(String finp)
+  {
+    String f1 = getFileName(finp);
+//    String  fext = getFileExtension(finp); // расширение
+//    //String f2 = f1.replace(" ","_");
+//    String name;
+//    try {
+//      String tmpd = MimeUtility.encodeText(f1);
+//      String fo2  = MimeUtility.decodeText(tmpd);
+//      name = f1;
+//    } catch (Exception e) {
+//      // ошибка кодирования имени файла
+//      System.err.println("error mime string " + e.getMessage());
+//      name = "filename" + fext;
+//    }
+//    //String attach = MimeUtility.decodeText(bp.getFileName());  // раскодируем на всякий случай имя файла
+    String outFileName = R.TmpDir + f1 + R.CryptoExt;
+    return  outFileName;
+  }
+
 
 } // end of class

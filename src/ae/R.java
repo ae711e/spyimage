@@ -414,5 +414,28 @@ public class R {
   // регулярное выражение для выделения эл. адреса
   private static Pattern email_pattern = Pattern.compile("[a-z0-9_.\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,4}",Pattern.CASE_INSENSITIVE);
 
+  /**
+   * Выдать имя файла
+   * @param fullname полное имя файла
+   * @return имя файла
+   */
+  public static String getFileName(String fullname)
+  {
+    File f  = new File(fullname);
+    String f1 = f.getName();
+    return f1;
+  }
+
+  /**
+   * Выдать расширение файла
+   * @param fullname полное имя файла
+   * @return расширение
+   */
+  public static String getFileExtension(String fullname)
+  {
+    Matcher mt = Pattern.compile("\\.\\w+$", Pattern.CASE_INSENSITIVE).matcher(fullname);
+    String fext = mt.find() ? mt.group() : ""; // расширение
+    return fext;
+  }
 
 } // end of class

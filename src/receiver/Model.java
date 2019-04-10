@@ -119,7 +119,8 @@ class Model
             BodyPart  bp = getAttachedPart(mp);
             if(bp != null) {
               // файл вложения
-              String attach = MimeUtility.decodeText(bp.getFileName());  // раскодируем на всякий случай имя файла
+              String ssb    = bp.getFileName();
+              String attach = MimeUtility.decodeText(ssb);  // раскодируем на всякий случай имя файла
               if(attach.contains(R.CryptoExt)) {
                 // имя файла с крипто-расширением могут содержать зашифрованное изображение
                 // запомним это письмо
@@ -337,6 +338,8 @@ class Model
     props.put("mail." + proto + ".host",       R.PostServer);
     props.put("mail." + proto + ".port"      , R.PostPort);
     props.put("mail." + proto + ".ssl.enable", R.PostSSL);
+    // https://www.mkyong.com/java/javamail-api-sending-email-via-gmail-smtp-example/
+    props.put("mail." + proto + ".auth", "true");
     // Настроить аутентификацию, получить session
     //auth = new EmailAuthenticator();
     //
@@ -348,7 +351,7 @@ class Model
       store.connect(host, R.PostUser, R.PostPwd);
       //store.connect();  
     } catch(Exception e){
-      System.out.println("?Error-нет подключения к почтовому серверу " + e.getMessage());
+      System.err.println("?Error-нет подключения к почтовому серверу " + e.getMessage());
       return null;
     }
     return store;

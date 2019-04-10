@@ -30,6 +30,8 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ae.R.getFileExtension;
+
 
 public class Controller extends OutputStream implements Initializable
 {
@@ -111,10 +113,8 @@ public class Controller extends OutputStream implements Initializable
     if(fileNameImage != null) {
       // если файл с изображением есть, то выберем куда копировать
       FileSelect fs = new dialog.FileSelect();
-      Matcher mt = Pattern.compile("\\.\\w+$",Pattern.CASE_INSENSITIVE)
-          .matcher(fileNameImage);
-      String  ext = mt.find()?mt.group().replace(".",""):null;
-      //
+      // расширение (без точки)
+      String  ext = getFileExtension(fileNameImage).replace(".","");
       String fname = fs.saveDialog(ae, ext);
       //System.out.println("Сохранить изображение в файл <" + fname + ">");
       try {
