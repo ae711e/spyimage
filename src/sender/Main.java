@@ -23,7 +23,7 @@ public class Main extends Application {
     Parent root = FXMLLoader.load(getClass().getResource("sender.fxml"));
     primaryStage.getIcons().add(new Image("res/app.png"));
     primaryStage.setTitle("Отправка изображения");
-    primaryStage.setScene(new Scene(root, 500, 590));
+    primaryStage.setScene(new Scene(root, 500, 580));
     primaryStage.getScene().getStylesheets().add("css/JMetroLightTheme.css"); //подключим стили
     primaryStage.show();
   }

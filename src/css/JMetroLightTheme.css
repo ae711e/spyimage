@@ -670,6 +670,14 @@
     -fx-text-fill: #91ff31;
 }
 
+#btn_app {
+    -fx-background-color: #242363;
+    -fx-text-fill: #94d65b;
+    -fx-font-size: 11px;
+    -fx-background-radius: 12px;
+     -fx-background-insets: 0, 0 0 0 0;
+}
+
 /* зададим фон для конкретного поля */
 #txt_result .content {
     -fx-background-color: transparent;

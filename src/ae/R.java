@@ -6,6 +6,10 @@
 
 package ae;
 
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.stage.Stage;
+
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -96,7 +100,7 @@ public class R {
       String str = db.Dlookup("SELECT COUNT(*) FROM _Info;");
       if (str == null) {
         // ошибка чтения из БД - создадим таблицу
-        String ssql[] = create_tables.split(";"); // разобьем на отдельные операторы
+        String[] ssql = create_tables.split(";"); // разобьем на отдельные операторы
         for (String ss: ssql)
           db.ExecSql(ss);
       }
@@ -437,6 +441,18 @@ public class R {
     Matcher mt = file_extension.matcher(fullname);
     String fext = mt.find() ? mt.group() : ""; // расширение
     return fext;
+  }
+
+  /**
+   * Получить из события сцену, где оно случилось
+   * @param ae  событие
+   * @return  сцена
+   */
+  public static Stage event2stage(ActionEvent ae)
+  {
+    Node source = (Node) ae.getSource();
+    Stage stage = (Stage) source.getScene().getWindow();
+    return stage;
   }
 
 } // end of class

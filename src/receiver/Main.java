@@ -16,13 +16,13 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-  @Override
 
+  @Override
   public void start(Stage primaryStage) throws Exception{
     Parent root = FXMLLoader.load(getClass().getResource("receiver.fxml"));
     primaryStage.getIcons().add(new Image("res/app.png"));
     primaryStage.setTitle("Прием изображения");
-    primaryStage.setScene(new Scene(root, 780, 780));
+    primaryStage.setScene(new Scene(root, 780, 650));
     primaryStage.getScene().getStylesheets().add("css/JMetroLightTheme.css"); //подключим стили
     primaryStage.show();
   }

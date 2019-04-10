@@ -222,7 +222,7 @@ class Model
   /**
    * Загрузить из почты файл, расшифровать его, сохранить на диск и вернуть имя файла
    * @param mind  индекс почты
-   * @return
+   * @return имя файла соханения
    */
   String  loadMailImage(int mind)
   {

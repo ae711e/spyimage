@@ -10,11 +10,10 @@
 
 package dialog;
 
+import ae.R;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
 
 public class FileSelect
@@ -33,7 +32,7 @@ public class FileSelect
    */
   public String openDialog(ActionEvent ae, boolean extensionImageFile)
   {
-    Stage stage = event2stage(ae);
+    Stage stage = R.event2stage(ae);
     FileChooser fileChooser = new FileChooser();
     // @see https://o7planning.org/ru/11129/javafx-filechooser-and-directorychooser-tutorial#a3827915
     // Set Initial Directory
@@ -60,7 +59,7 @@ public class FileSelect
    */
   public String saveDialog(ActionEvent ae, String extensionImageFile)
   {
-    Stage stage = event2stage(ae);
+    Stage stage = R.event2stage(ae);
     FileChooser fileChooser = new FileChooser();
     // @see https://www.genuinecoder.com/save-files-javafx-filechooser/
     // Set Initial Directory
@@ -78,17 +77,6 @@ public class FileSelect
     String  fname = selectedFile.getPath();
     initialDir = name2dir(fname);
     return fname;
-  }
-
-  /**
-   * Получить сцену кнопки по событию кнопки
-   * @param ae  событие кнопки
-   * @return  сцена
-   */
-  private Stage   event2stage(ActionEvent ae)
-  {
-    Node source = (Node) ae.getSource();
-    return (Stage) source.getScene().getWindow();
   }
 
   /**

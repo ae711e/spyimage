@@ -13,12 +13,14 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<GridPane alignment="center" hgap="10" prefHeight="143.0" prefWidth="173.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sender.Controller">
+<GridPane alignment="center" hgap="10" prefHeight="150.0" prefWidth="180.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sender.Controller">
    <children>
       <Label fx:id="lbl_email" text="Label" textFill="#308a5d" GridPane.rowIndex="0" />
       <ImageView fx:id="f_image" fitHeight="250.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1" />
       <Button fx:id="btn_load" minWidth="-Infinity" mnemonicParsing="false" onAction="#onclick_btn_load" text="загрузить" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
       <Button fx:id="btn_send" minWidth="-Infinity" mnemonicParsing="false" onAction="#onclick_btn_send" text="отправить" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+
+      <Button fx:id="btn_app" mnemonicParsing="false" onAction="#onclick_btn_app" text=">> прием" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
 
       <TextField fx:id="txt_receiver" promptText="адрес получателя" GridPane.rowIndex="2" />
       <ComboBox fx:id="cmb_users" minWidth="-Infinity" onAction="#onaction_cmb_users" prefWidth="300.0" GridPane.rowIndex="3" />
@@ -49,5 +51,8 @@
       <RowConstraints />
       <RowConstraints />
    </rowConstraints>
+   <padding>
+      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+   </padding>
 
 </GridPane>

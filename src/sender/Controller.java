@@ -12,9 +12,11 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.URL;
@@ -96,12 +98,24 @@ public class Controller extends OutputStream implements Initializable
     f_image.setImage(image2);
     //
     // заполним список пользователей про которых у нас есть ключи
+    loadUsers();
+    cmb_users.getSelectionModel().select(0);
+    //
+    onaction_cmb_users(null); // заполним поле адресата
+  }
+
+  /**
+   * заполнить список пользователей в комбо-боксе
+   */
+  private void  loadUsers()
+  {
+    String  str = cmb_users.getValue();
+    // заполним список пользователей про которых у нас есть ключи
     Collection<String> users = model.getKeysUsers();
     cmb_users.getItems().removeAll(cmb_users.getItems()); // очистить список комбо-бокса
     cmb_users.getItems().addAll(users);
-    cmb_users.getSelectionModel().select(0);  // выбрать первый элемент
-    //
-    onaction_cmb_users(null); // заполним поле адресата
+    if(str != null && str.length() > 1)
+      cmb_users.getSelectionModel().select(str);  // выбрать ранее выбранный
   }
 
   /**
@@ -162,6 +176,8 @@ public class Controller extends OutputStream implements Initializable
   {
     keygenmy.Dialog  dw = new keygenmy.Dialog();
     dw.open(ae);
+    // заполним список пользователей про которых у нас есть ключи
+    loadUsers();
   }
 
   /**
@@ -176,7 +192,21 @@ public class Controller extends OutputStream implements Initializable
     txt_receiver.setText(str);
   }
 
-
+  /**
+   * Вызовем на сцену "прием изображений"
+    * @param ae событие
+   */
+  public void onclick_btn_app(ActionEvent ae)
+  {
+    Stage stage = R.event2stage(ae);  // сцена
+    //
+    receiver.Main m = new receiver.Main();
+    try {
+      m.start(stage);
+    } catch (Exception e) {
+      System.err.println("Ошибка запуска Передачи");
+    }
+  }
 
 } // end of class
 

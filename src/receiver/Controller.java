@@ -18,6 +18,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
@@ -206,9 +207,22 @@ public class Controller extends OutputStream implements Initializable
     col_fnam.setCellValueFactory(cellData -> cellData.getValue().fnamProperty());
     // заполняем таблицу данными
     tbl_table.setItems(usersData);
-
-
   }
 
+  /**
+   * Вызовен на сцену "отправка изображений"
+   * @param ae событие
+   */
+  public void onclick_btn_app(ActionEvent ae)
+  {
+    Stage stage = R.event2stage(ae);  // сцена
+    //
+    sender.Main m = new sender.Main();
+    try {
+      m.start(stage);
+    } catch (Exception e) {
+      System.err.println("Ошибка запуска Приема");
+    }
+  }
 
 } // end of class

@@ -111,8 +111,7 @@ public class Controller implements Initializable {
    */
   private void closeStage(ActionEvent ae)
   {
-    Node source = (Node) ae.getSource();
-    Stage stage = (Stage) source.getScene().getWindow();
+    Stage stage = R.event2stage(ae);
     stage.close();
   }
 

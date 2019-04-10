@@ -13,7 +13,6 @@ import ae.R;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -36,7 +35,7 @@ public class AccountController implements Initializable {
   @FXML
   TextField txt_SmtpPort;   // порт почтового сервера для отправки
   @FXML
-  TextField txt_SmtpSSL;   // SSL почтового сервера
+  ComboBox<String> cb_SmtpSSL; // SSL почтового сервера
 
   @FXML
   TextField txt_PostUser;       // пользователь приема
@@ -48,17 +47,10 @@ public class AccountController implements Initializable {
   @FXML
   TextField txt_PostPort;   // порт почтового сервера
   @FXML
-  TextField txt_PostSSL;   // SSL почтового сервера
+  ComboBox<String> cb_PostSSL; // SSL почтового сервера
 
   @FXML
-  ComboBox<String>  cb_proto;
-
-  @FXML
-  ComboBox<String> cb_SmtpSSL;
-
-  @FXML
-  ComboBox<String> cb_PostSSL;
-
+  ComboBox<String>  cb_proto;  // протокол приема
 
   @FXML
   Button        btn_Ok;
@@ -82,7 +74,7 @@ public class AccountController implements Initializable {
   /**
    * Возьмем данные учетной записи
    */
-  public void getAccount() {
+  void getAccount() {
     R.getAccount();   // заполним данные учетной записи
     txt_Email.setText(R.Email);       // электронный адрес почты
 
@@ -110,7 +102,7 @@ public class AccountController implements Initializable {
   /**
    * Запишем данные учетной записи после редактирования
    */
-  void putAccount() {
+  private void putAccount() {
     //
     R.Email = txt_Email.getText();       // электронный адрес почты
 
@@ -139,8 +131,7 @@ public class AccountController implements Initializable {
    */
   private void closeStage(ActionEvent ae)
   {
-    Node source = (Node) ae.getSource();
-    Stage stage = (Stage) source.getScene().getWindow();
+    Stage stage = R.event2stage(ae);
     stage.close();
   }
 
