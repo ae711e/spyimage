@@ -7,8 +7,8 @@
 
 package receiver;
 
-import ae.MailSend;
 import ae.MyCrypto;
+import ae.Postman;
 import ae.R;
 
 import javax.mail.*;
@@ -16,7 +16,6 @@ import javax.mail.internet.MimeUtility;
 import java.io.*;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static ae.R.extractEmail;
@@ -29,7 +28,6 @@ class Model
 
   ArrayList<String[]>  readmails()
   {
-    int i, j, n;
     ArrayList<String[]> strRes = new ArrayList<>();
     // @see http://javatutor.net/articles/receiving-mail-with-mail-api
     // http://prostoitblog.ru/poluchenie-pochti-java-mail/
@@ -39,18 +37,17 @@ class Model
     // http://ryakovlev.blogspot.com/2014/11/java_17.html
     try {
       // Получить store
-      Store store = openStore(); // открыть хранилище почтового сервера
+      Store store = Postman.openStore(); // открыть хранилище почтового сервера
       // Получить folder
       Folder folder;
       // Получить каталог
       Message[] messages;
+      assert store != null;
       folder = store.getFolder("INBOX");
       folder.open(Folder.READ_WRITE); //  READ_ONLY
       messages = folder.getMessages();
       // Отобразить поля from (только первый отправитель) и subject сообщений
-      int nm = messages.length;
-      for (j = 0; j < nm; j++) {
-        Message m = messages[j];
+      for(Message m: messages) {
         String from, fuel;
         fuel = m.getFrom()[0].toString(); // первый отправитель
         from = extractEmail(fuel);  // выделим чистый e-mail
@@ -90,7 +87,6 @@ class Model
               }
             }
           }
-          continue;
         }
       }
       // Закрыть соединение
@@ -102,10 +98,7 @@ class Model
       folder.open(Folder.READ_ONLY); //  READ_ONLY
       messages = folder.getMessages();
       // Отобразить поля from (только первый отправитель) и subject сообщений
-      nm = messages.length;
-      for (j = 0; j < nm; j++) {
-        // Вывод содержимого в консоль
-        Message m = messages[j];
+      for(Message m: messages) {
         String fuel = m.getFrom()[0].toString(); // первый отправитель
         String from = extractEmail(fuel);  // выделим чистый e-mail
         String subj = m.getSubject();
@@ -138,7 +131,6 @@ class Model
               }
             }
           }
-          continue;
         }
       }
       folder.close(false);  // false
@@ -164,9 +156,7 @@ class Model
    */
   private boolean sendMyPubKey(String email)
   {
-    String otv, subj, mess;
-    MailSend msg = new MailSend();
-    //
+    String subj, mess;
     //String usr = R.db.s2s(R.Email);
     String pk  = R.db.Dlookup("SELECT publickey FROM keys WHERE mykey=1");
     // есть публичный ключ?
@@ -179,8 +169,7 @@ class Model
       // отправить публичный ключ
       subj = R.Subj_publickey + " " + R.Email;
       mess = "Hello, dear friend! " + email + ".\rI'm send Your my public key. Sincerely, " + R.Email;
-      otv = msg.mailSend(email, subj, mess, foname);
-      return (otv != null);
+      return Postman.mailSend(email, subj, mess, foname);
     }
     return false;
   }
@@ -229,24 +218,21 @@ class Model
     String fdatname = null; // имя зашифрованного файла
     try {
       // Получить store
-      Store store = openStore(); // // открыть хранилище почтового сервера
+      Store store = Postman.openStore(); // открыть хранилище почтового сервера
       // Получить folder
       Folder folder;
       // Получить каталог
       Message[] messages;
+      assert store != null;
       folder = store.getFolder("INBOX");
       folder.open(Folder.READ_ONLY); //  READ_ONLY
       messages = folder.getMessages();
       // Отобразить поля from (только первый отправитель) и subject сообщений
-      int nm = messages.length;
-      for(int j = 0; j < nm; j++) {
-        Message m = messages[j];
+      for(Message m: messages) {
         if(m.getMessageNumber() == mind) {
-          nm = 0;
           // нашли нужное сообщение
           Object content = m.getContent();
-          // письмо может содержать вложения
-          // поищем их
+          // письмо может содержать вложения - поищем их
           Multipart mp = (Multipart) content;
           for(int ip = 0, nmp = mp.getCount(); ip < nmp; ip++) {
             BodyPart bp = mp.getBodyPart(ip); // часть сообщения
@@ -254,12 +240,11 @@ class Model
             if (fileAttach != null) {
               // файл вложения
               String attach = MimeUtility.decodeText(fileAttach);  // раскодируем на всякий случай имя файла
-              if(attach.contains(R.CryptoExt)) {
+              if(attach.contains(R.CryptoExt))
                 fdatname = writeAttachFile(bp);
-                break;
-              }
             }
           }
+          break;
         }
       }
       folder.close(false);
@@ -269,8 +254,7 @@ class Model
         // System.out.println("Crypto file " + fdatname);
         String  priv = R.db.Dlookup("SELECT privatekey FROM keys WHERE mykey=1");
         if(priv  != null) {
-          String foutname = decryptFile(fdatname, priv);
-          return foutname;
+          return decryptFile(fdatname, priv);
         } else {
           System.out.println("Не заданы собственные ключи");
         }
@@ -278,7 +262,6 @@ class Model
     } catch (Exception e) {
       System.out.println("?-Error-loadMailImage() " + e.getMessage());
     }
-
     return null;
   }
 
@@ -307,54 +290,6 @@ class Model
       System.out.println("?-Error-encryptFile(): " + e.getMessage());
     }
     return null;
-  }
-
-//  private class EmailAuthenticator extends Authenticator {
-//    public PasswordAuthentication getPasswordAuthentication() {
-//      String username, password;
-//      username = R.SmtpUser; password = R.SmtpPwd;
-//      return new PasswordAuthentication(username, password);
-//    }
-//  }
-  /**
-   * Получить хранилище почтового сервера и подключиться к нему
-   * @return
-   */
-  private Store openStore()
-  {
-    Store store;
-    //Authenticator auth = null;
-    // Свойства установки
-    Properties props = System.getProperties();
-    //
-    props.put("mail.debug", "false");
-    String  host  = R.PostServer;
-    String  proto = R.PostProtocol;
-    // если протокол не то, не се, то сделаем imap
-    if(proto.compareTo("imap")!=0 && proto.compareTo("pop3")!=0) {
-      R.PostProtocol = proto = "imap";
-    }
-    props.put("mail.store.protocol" , proto);
-    props.put("mail." + proto + ".host",       R.PostServer);
-    props.put("mail." + proto + ".port"      , R.PostPort);
-    props.put("mail." + proto + ".ssl.enable", R.PostSSL);
-    // https://www.mkyong.com/java/javamail-api-sending-email-via-gmail-smtp-example/
-    props.put("mail." + proto + ".auth", "true");
-    // Настроить аутентификацию, получить session
-    //auth = new EmailAuthenticator();
-    //
-    Session session = Session.getDefaultInstance(props, null);
-    try {
-      // Получить store
-      store = session.getStore(proto); // "pop3"
-      // Подключение к почтовому серверу
-      store.connect(host, R.PostUser, R.PostPwd);
-      //store.connect();  
-    } catch(Exception e){
-      System.err.println("?Error-нет подключения к почтовому серверу " + e.getMessage());
-      return null;
-    }
-    return store;
   }
 
   /**

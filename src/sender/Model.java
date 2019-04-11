@@ -6,8 +6,8 @@
  */
 package sender;
 
-import ae.MailSend;
 import ae.MyCrypto;
+import ae.Postman;
 import ae.R;
 import static ae.R.*;
 
@@ -28,8 +28,7 @@ class Model
    */
   boolean  sendMailTo(String email, String fileAppend)
   {
-    String otv, subj, mess;
-    MailSend msg = new MailSend();
+    String subj, mess;
     String  app;
     // ключ, который записан на указанный e-mail
     String usr = R.db.s2s(email);
@@ -43,6 +42,7 @@ class Model
         String  fn = getFileName(fileAppend);
         subj = R.Subj_imagedoc + " " + email + " <" + fn + ">";
         mess = "Hello, dear friend! " + email + ".\r" + subj;
+        mess += "\r\n Дорогой друг, отправляю тебе специальное изображение документа\r\n";
         app = fout;
       } else {
         System.err.println("?-Error-не удалось зашифровать файл: " + fileAppend);
@@ -53,11 +53,11 @@ class Model
       System.out.println("Получатель " + email + " неизвестен, запросим у него public key");
       String ks = " to email address: [ " + R.Email + " ]";
       subj = R.Subj_askpubkey + ks;
-      mess = subj + ".\r\n S uvageniem, abonent S.P.Y. Image.\r\n";
+      mess = subj + ".\r\nS uvageniem, abonent S.P.Y. Image.\r\n";
+      mess += "\r\nПримечание. Для безопасной пересылки данных нужен публичный ключ.\r\n";
       app = null;
     }
-    otv = msg.mailSend(email, subj, mess, app);
-    return (otv != null);
+    return Postman.mailSend(email, subj, mess, app);
   }
 
   /**
@@ -121,9 +121,7 @@ class Model
 //      name = "filename" + fext;
 //    }
 //    //String attach = MimeUtility.decodeText(bp.getFileName());  // раскодируем на всякий случай имя файла
-    String outFileName = R.TmpDir + f1 + R.CryptoExt;
-    return  outFileName;
+    return R.TmpDir + f1 + R.CryptoExt;
   }
-
 
 } // end of class
