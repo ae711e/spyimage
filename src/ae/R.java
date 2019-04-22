@@ -419,15 +419,14 @@ public class R {
   }
 
   /**
-   * Выдать имя файла
+   * Выдать имя файла c расширением
    * @param fullname полное имя файла
    * @return имя файла
    */
   public static String getFileName(String fullname)
   {
-    File f  = new File(fullname);
-    String f1 = f.getName();
-    return f1;
+    File f = new File(fullname);
+    return f.getName();
   }
 
   /**

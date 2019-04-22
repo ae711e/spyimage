@@ -128,7 +128,6 @@ public class Controller extends OutputStream implements Initializable
         System.out.println("Ошибка записи выходного файла: " + fname);
       }
     }
-
   }
 
   /**
@@ -154,7 +153,6 @@ public class Controller extends OutputStream implements Initializable
         System.out.println("Ошибка расшифровки входного файла");
       }
     }
-
   }
 
   /**

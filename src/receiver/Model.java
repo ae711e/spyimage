@@ -233,16 +233,21 @@ class Model
           // нашли нужное сообщение
           Object content = m.getContent();
           // письмо может содержать вложения - поищем их
-          Multipart mp = (Multipart) content;
-          for(int ip = 0, nmp = mp.getCount(); ip < nmp; ip++) {
-            BodyPart bp = mp.getBodyPart(ip); // часть сообщения
-            String fileAttach = bp.getFileName();
-            if (fileAttach != null) {
-              // файл вложения
-              String attach = MimeUtility.decodeText(fileAttach);  // раскодируем на всякий случай имя файла
-              if(attach.contains(R.CryptoExt))
-                fdatname = writeAttachFile(bp);
+          if(content instanceof Multipart) {
+            Multipart mp = (Multipart) content;
+            for (int ip = 0, nmp = mp.getCount(); ip < nmp; ip++) {
+              BodyPart bp = mp.getBodyPart(ip); // часть сообщения
+              String fileAttach = bp.getFileName();
+              if (fileAttach != null) {
+                // файл вложения
+                String attach = MimeUtility.decodeText(fileAttach);  // раскодируем на всякий случай имя файла
+                if (attach.contains(R.CryptoExt))
+                  fdatname = writeAttachFile(bp);
+                break;
+              }
             }
+          } else {
+            System.out.println("В письме нет вложения");
           }
           break;
         }

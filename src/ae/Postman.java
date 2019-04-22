@@ -4,7 +4,9 @@
  */
 
 /*
-  Обработка почты
+  Обработка почты:
+  отправка писем
+  получение хранилища входных писем
  */
 
 package ae;
@@ -28,17 +30,20 @@ public class Postman
     Properties prop = System.getProperties();
     prop.put("mail.smtp.host", R.SmtpServer);
     prop.put("mail.smtp.port", R.SmtpPort);
-    Authenticator authenticator = null;
-    if(username != null && username.length()>0) {
+    Authenticator authenticator;
+    if(username != null && username.length() > 0) {
       // наличие пароля предполагает SSL протокол отправки smtp
       prop.put("mail.smtp.auth", "true");
       prop.put("mail.smtp.socketFactory.port", R.SmtpPort);
-      prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+      if (R.SmtpSSL.compareTo("true") == 0) // задан SSL протокол
+        prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
       authenticator = new Authenticator() {
         protected PasswordAuthentication getPasswordAuthentication() {
           return new PasswordAuthentication(username, password);
         }
       };
+    } else {
+      authenticator = null; // нет аутентификации
     }
     // делаем сессию для передачи сообщения
     Session session = Session.getInstance(prop, authenticator);
