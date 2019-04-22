@@ -25,7 +25,7 @@ public class Postman
     final String password = R.SmtpPwd;
     Locale.setDefault(new Locale("ru", "RU"));
     //
-    Properties prop = new Properties();
+    Properties prop = System.getProperties();
     prop.put("mail.smtp.host", R.SmtpServer);
     prop.put("mail.smtp.port", R.SmtpPort);
     Authenticator authenticator = null;
