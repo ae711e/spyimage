@@ -120,7 +120,8 @@ class Model
 //      name = "filename" + fext;
 //    }
 //    //String attach = MimeUtility.decodeText(bp.getFileName());  // раскодируем на всякий случай имя файла
-    return R.TmpDir + f1 + R.CryptoExt;
+    // в Linux разделитель необходим
+    return R.TmpDir + R.sep + f1 + R.CryptoExt;
   }
 
 } // end of class
